@@ -2,8 +2,6 @@
 #define IR2 A1
 #define IR3 A2
 #define IR4 A3
-#define IR5 A4
-#define IR6 A5
 
 #define RMotorA 2
 #define RMotorB 3
@@ -17,8 +15,8 @@
 
 int MotorBasespeed = 100;
 
-int IR_val[6] = {0, 0, 0, 0, 0, 0};
-int IR_weights[6] = {-20,-10,-5,5,10,20};
+int IR_val[4] = {0, 0, 0, 0};
+int IR_weights[4] = {-20,-10,-5,5};
 
 int LMotorSpeed = 0;
 int RMotorSpeed = 0;
@@ -36,10 +34,6 @@ void read_IR();
 void set_speed();
 void set_forward();
 
-#define servoPin 9
-#define ultrasonicTrigger 10
-#define ultrasonicEcho 11
-
 void setup()
 {
   // put your setup code here, to run once:
@@ -48,8 +42,6 @@ void setup()
   pinMode(IR2, INPUT);
   pinMode(IR3, INPUT);
   pinMode(IR4, INPUT);
-  pinMode(IR5, INPUT);
-  pinMode(IR6, INPUT);
 
   pinMode(LMotorA, OUTPUT);
   pinMode(LMotorB, OUTPUT);
@@ -58,10 +50,6 @@ void setup()
   pinMode(RMotorA, OUTPUT);
   pinMode(RMotorB, OUTPUT);
   pinMode(RMotorPWM, OUTPUT);
-
-  pinMode(servoPin, OUTPUT);
-  pinMode(ultrasonicTrigger, OUTPUT);
-  pinMode(ultrasonicEcho, INPUT);
 
   set_forward();
   delay(2000);
@@ -73,34 +61,19 @@ void loop()
 {
 
   read_IR();
-  if (IR_val[0] ==0 && IR_val[1] ==0 && IR_val[2] ==0 && IR_val[3] ==0 && IR_val[4] ==0 && IR_val[5] ==0){
+  if (IR_val[0] ==0 && IR_val[1] ==0 && IR_val[2] ==0 && IR_val[3] ==0){
     stop();
     while(1){}
   }
 PID_control();
   set_speed();
-
-  // Check if the distance is less than 3cm
-  if (distance < 3) {
-    // Gripper closed
-    digitalWrite(servoPin, HIGH);
-    delayMicroseconds(1450); // Duration of the pusle in microseconds
-    digitalWrite(servoPin, LOW);
-    delayMicroseconds(18550); // 20ms - duration of the pusle
-  } else {
-    // Gripper open
-    digitalWrite(servoPin, LOW);
-    delayMicroseconds(2000); // Duration of the pusle in microseconds
-    digitalWrite(servoPin, HIGH);
-    delayMicroseconds(1800); // 20ms - duration of the pusle
-  }
 }
 
 void PID_control() {
 
   error =0;
 
-  for (int i = 0; i < 6; i++)
+  for (int i = 0; i < 4; i++)
   {
     error += IR_weights[i] * IR_val[i];
   }
@@ -126,3 +99,32 @@ void PID_control() {
     }
   }
     
+void read_IR() {
+
+  for (int i = 0; i < 4; i++)
+  {
+    IR_val[i] = analogRead(i);
+  }
+}
+
+void set_speed() {
+
+  analogWrite(LMotorPWM, LMotorSpeed);
+  analogWrite(RMotorPWM, RMotorSpeed);
+}
+
+void set_forward() {
+
+  digitalWrite(LMotorA, HIGH);
+  digitalWrite(LMotorB, LOW);
+  digitalWrite(RMotorA, HIGH);
+  digitalWrite(RMotorB, LOW);
+}
+
+void stop() {
+
+  digitalWrite(LMotorA, LOW);
+  digitalWrite(LMotorB, LOW);
+  digitalWrite(RMotorA, LOW);
+  digitalWrite(RMotorB, LOW);
+}
