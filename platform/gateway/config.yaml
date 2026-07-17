@@ -1,0 +1,176 @@
+# OMNI Gateway config.yaml - LiteLLM compatible + extended
+# This allows instant migration from LiteLLM
+
+# Model list - 100+ providers mapping (subset demo)
+model_list:
+  - model_name: gpt-5
+    litellm_params:
+      model: openai/gpt-5
+      api_base: https://api.openai.com/v1
+      api_key: env/OPENAI_API_KEY
+      weight: 3
+      fallback: [claude-opus-4.6, gemini-3-pro]
+
+  - model_name: gpt-5-mini
+    litellm_params:
+      model: openai/gpt-5-mini
+      api_key: env/OPENAI_API_KEY
+      weight: 5
+
+  - model_name: claude-sonnet-4.5
+    litellm_params:
+      model: anthropic/claude-sonnet-4.5
+      api_base: https://api.anthropic.com
+      api_key: env/ANTHROPIC_API_KEY
+      weight: 4
+
+  - model_name: gemini-2.5-pro
+    litellm_params:
+      model: gemini/gemini-2.5-pro
+      api_key: env/GEMINI_API_KEY
+      weight: 4
+
+  - model_name: deepseek-v3
+    litellm_params:
+      model: deepseek/deepseek-chat
+      api_base: https://api.deepseek.com
+      api_key: env/DEEPSEEK_API_KEY
+      weight: 7  # cheap, higher weight for cost routing
+
+  - model_name: llama-4-maverick # Groq ultra low latency sub-100ms
+    litellm_params:
+      model: groq/llama-4-maverick
+      api_base: https://api.groq.com/openai/v1
+      api_key: env/GROQ_API_KEY
+      weight: 6
+
+  - model_name: flux-pro # media via fal.ai compat
+    litellm_params:
+      model: fal-ai/flux-pro
+      api_base: https://queue.fal.run
+      api_key: env/FAL_API_KEY
+
+  - model_name: veo-3
+    litellm_params:
+      model: fal-ai/veo-3
+      api_base: https://queue.fal.run
+      api_key: env/FAL_API_KEY
+
+  # OMNI auto router
+  - model_name: auto
+    litellm_params:
+      model: omni/auto
+      routing_strategy: cost_aware # cost, quality, latency, pareto
+      fallback_models: [gpt-5-mini, gemini-2.5-flash, claude-haiku-4.5, deepseek-v3]
+
+# Router settings - Portkey/Bifrost inspired
+router_settings:
+  routing_strategy: weighted_shuffle # simple_shuffle, latency_based, cost_based, least_busy
+  num_retries: 3
+  retry_strategy: exponential_backoff
+  timeout: 30
+  fallbacks:
+    - gpt-5: [claude-sonnet-4.5, gemini-2.5-pro, deepseek-v3]
+    - claude-sonnet-4.5: [gpt-5, gemini-2.5-pro]
+    - gemini-2.5-pro: [gpt-5-mini, claude-haiku-4.5]
+  context_window_fallbacks:
+    - gpt-5: [gemini-3-pro] # Gemini 2M context longer
+  content_policy_fallbacks:
+    - claude-sonnet-4.5: [gpt-5] # if safety block
+
+# Cache - Bifrost/Maxim pattern 40% hit rate target
+cache_settings:
+  type: redis
+  host: localhost
+  port: 6379
+  exact_enabled: true
+  semantic_enabled: true
+  semantic_threshold: 0.95
+  embedding_model: text-embedding-3-small
+  vector_store: qdrant
+  ttl_seconds: 86400
+  namespace: omni_cache
+
+# Budget - hierarchical like Bifrost Virtual Keys
+budget_settings:
+  max_tokens_per_minute:
+    org: 10000000
+    team: 1000000
+    user: 100000
+  max_cost_per_day:
+    org: 1000
+    team: 100
+    user: 10
+
+# MCP Gateway - Zuplo + Red Hat pattern
+mcp_gateway:
+  spec_version: "2026-07-28"
+  stateless: true
+  transport: streamable_http # sse deprecated per 2025-03 rev
+  federation:
+    enabled: true
+    upstreams: # these would be team-specific in DB
+      - name: github
+        url: https://mcp.github.com/stdio
+        auth_type: oauth
+        prefix: github__
+      - name: postgres
+        url: https://mcp.internal/postgres
+        auth_type: api_key
+        prefix: postgres__
+        requires_approval: true
+        sensitive: true
+      - name: slack
+        url: https://mcp.slack.com/v1
+        auth_type: oauth
+        prefix: slack__
+  security:
+    prompt_injection_scan: true
+    pii_masking: true
+    secret_masking: true
+    container_isolation: true
+    image_signing: true
+  rate_limit:
+    max_tool_calls_per_min: 100
+    max_tool_calls_per_session: 1000
+
+# Commerce - x402 + MPP
+commerce:
+  x402:
+    enabled: true
+    version: V2
+    facilitator: https://x402.omni.ai # our facilitator, or Coinbase CDP
+    chains: [base, solana]
+    token: USDC
+    merchant_wallet: 0xOMNI_MERCHANT
+    fee_bps: 500 # 5%
+  mpp:
+    enabled: true
+    facilitator: stripe
+    session_ttl: 3600
+    max_spend_per_session: 100
+    allowlist_required: false
+  stripe:
+    enabled: true
+    billing: metered
+    tax: true
+
+# Observability - Helicone/Portkey level
+observability:
+  otel:
+    enabled: true
+    endpoint: https://otel.omni.ai
+  prometheus:
+    enabled: true
+    endpoint: /metrics
+  clickhouse:
+    enabled: true
+    dsn: env/CLICKHOUSE_DSN
+  mlflow:
+    enabled: true
+    tracking_uri: env/MLFLOW_TRACKING_URI
+
+litellm_settings:
+  drop_params: true
+  set_verbose: false
+  json_logs: true
