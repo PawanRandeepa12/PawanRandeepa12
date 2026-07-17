@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OMNI — Unified AI API Platform | Any Model. Any Modality. Any Tool. One API.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Geist+Mono:wght@100..900&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  darkMode: 'class',
+  theme: {
+    extend: {
+      fontFamily: { sans: ['Geist','Inter','system-ui','sans-serif'], mono: ['Geist Mono','JetBrains Mono','monospace'] },
+      animation: { 'float': 'float 6s ease-in-out infinite', 'glow': 'glow 3s ease-in-out infinite' },
+      keyframes: {
+        float: { '0%,100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-10px)' } },
+        glow: { '0%,100%': { opacity: 0.6 }, '50%': { opacity: 1 } }
+      }
+    }
+  }
+}
+</script>
+<style>
+:root { color-scheme: dark; }
+body { font-family: 'Geist', system-ui, sans-serif; background: #050507; color: #e6e6e6; overflow-x: hidden; }
+.glass { backdrop-filter: blur(20px); background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); }
+.glass-strong { backdrop-filter: blur(24px); background: rgba(13,13,17,0.8); border: 1px solid rgba(255,255,255,0.1); }
+.gradient-text { background: linear-gradient(135deg, #7c3aed 0%, #06b6d4 50%, #e879f9 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.gradient-border { position: relative; } .gradient-border::before { content:''; position:absolute; inset:0; border-radius:inherit; padding:1px; background:linear-gradient(135deg, #7c3aed, #06b6d4, #e879f9); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; pointer-events:none; }
+.grid-bg { background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px); background-size: 40px 40px; }
+.code-block { background: #0a0a0f; border: 1px solid rgba(255,255,255,0.08); }
+.shine { position: relative; overflow: hidden; } .shine::after { content:''; position:absolute; top:0; left:-100%; width:100%; height:100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent); animation: shine 3s infinite; } @keyframes shine { 0% { left: -100%; } 100% { left: 100%; } }
+</style>
+</head>
+<body class="antialiased selection:bg-violet-500/30">
+
+<!-- Nav -->
+<nav class="fixed top-0 w-full z-50 glass-strong border-b border-white/5">
+  <div class="max-w-[1280px] mx-auto px-6 md:px-10 h-[64px] flex items-center justify-between">
+    <div class="flex items-center gap-10">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-600 to-cyan-400 flex items-center justify-center font-mono font-bold text-black">O</div>
+        <span class="text-[18px] font-semibold tracking-tight">OMNI</span>
+        <span class="hidden md:inline text-[11px] px-2 py-0.5 rounded-full bg-white/10 border border-white/10 font-mono">v0.1 RC</span>
+      </div>
+      <div class="hidden md:flex items-center gap-7 text-[14px] text-zinc-400">
+        <a href="#platform" class="hover:text-white transition">Platform</a>
+        <a href="#mcp" class="hover:text-white transition">MCP Registry</a>
+        <a href="#pricing" class="hover:text-white transition">Pricing</a>
+        <a href="../docs/00-executive-summary.md" class="hover:text-white transition">Docs</a>
+        <a href="#compare" class="hover:text-white transition">Compare</a>
+      </div>
+    </div>
+    <div class="flex items-center gap-3">
+      <a href="https://github.com" class="hidden md:flex text-[13px] text-zinc-400 hover:text-white transition items-center gap-2"><span class="w-4 h-4">↗</span>GitHub 1.2k</a>
+      <div class="h-4 w-px bg-white/10 hidden md:block"></div>
+      <a href="#demo" class="text-[13px] px-4 py-2 rounded-full bg-white text-black font-medium hover:bg-zinc-200 transition">Start Free — 10k req</a>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="relative pt-[160px] pb-[80px] overflow-hidden">
+  <div class="absolute inset-0 grid-bg opacity-60"></div>
+  <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[1200px] h-[800px] bg-gradient-to-b from-violet-900/30 via-cyan-900/10 to-transparent rounded-full blur-[120px] pointer-events-none"></div>
+  <div class="absolute top-[100px] right-[-200px] w-[600px] h-[600px] bg-gradient-to-br from-fuchsia-600/20 to-transparent rounded-full blur-[100px] pointer-events-none"></div>
+
+  <div class="max-w-[1280px] mx-auto px-6 md:px-10 relative">
+    <div class="flex flex-col lg:flex-row gap-16 items-start">
+      <div class="flex-1">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full glass text-[11px] font-mono tracking-wide mb-8">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          NEW: MCP 2026-07-28 RC + x402 V2 + MPP READY • LIVE
+        </div>
+        <h1 class="text-[48px] md:text-[72px] leading-[0.9] tracking-[-0.04em] font-[700]">
+          Any Model.<br>
+          Any Modality.<br>
+          <span class="gradient-text">Any Tool.<br>One API.</span>
+        </h1>
+        <p class="mt-6 text-[18px] leading-[1.6] text-zinc-400 max-w-[560px]">
+          The Stripe for AI. Unify <b class="text-white">500+ LLMs</b>, <b class="text-white">1000+ Media Models</b>, <b class="text-white">30+ Expert AI</b> and <b class="text-white">17k+ MCP Tools</b> behind one OpenAI-compatible endpoint with governance, cost AI, and agentic payments.
+        </p>
+
+        <div class="mt-8 flex flex-wrap gap-3">
+          <a href="#demo" class="px-6 py-3 rounded-full bg-white text-black font-medium text-[14px] hover:bg-zinc-200 transition shine">Start Building Free →</a>
+          <a href="#compare" class="px-6 py-3 rounded-full glass font-medium text-[14px] hover:bg-white/10 transition flex items-center gap-2">View Benchmarks <span class="opacity-60">↗</span></a>
+        </div>
+
+        <div class="mt-10 grid grid-cols-3 gap-6 max-w-[480px] border-t border-white/10 pt-8">
+          <div><div class="text-[24px] font-semibold tracking-tight">$12.5B</div><div class="text-[11px] font-mono text-zinc-500 uppercase tracking-wide mt-1">API Spend 2025</div></div>
+          <div><div class="text-[24px] font-semibold tracking-tight">40%</div><div class="text-[11px] font-mono text-zinc-500 uppercase tracking-wide mt-1">Cache Hit Rate</div></div>
+          <div><div class="text-[24px] font-semibold tracking-tight">11μs</div><div class="text-[11px] font-mono text-zinc-500 uppercase tracking-wide mt-1">Target Overhead</div></div>
+        </div>
+      </div>
+
+      <div class="flex-1 w-full lg:max-w-[560px]">
+        <!-- Interactive Code Window -->
+        <div class="relative">
+          <div class="absolute -inset-6 bg-gradient-to-br from-violet-600/20 via-cyan-500/10 to-fuchsia-600/20 rounded-[24px] blur-[30px]"></div>
+          <div class="relative glass-strong rounded-[16px] overflow-hidden border border-white/10">
+            <div class="flex items-center justify-between px-5 h-[48px] border-b border-white/5 bg-white/[0.02]">
+              <div class="flex items-center gap-2">
+                <div class="flex gap-1.5"><div class="w-3 h-3 rounded-full bg-red-500/80"></div><div class="w-3 h-3 rounded-full bg-yellow-500/80"></div><div class="w-3 h-3 rounded-full bg-green-500/80"></div></div>
+                <span class="ml-4 text-[12px] font-mono text-zinc-500">omni.ts — unified gateway demo</span>
+              </div>
+              <div class="flex items-center gap-1.5 text-[11px] font-mono">
+                <button data-tab="llm" class="tab-btn px-3 py-1 rounded-full bg-white text-black">LLM</button>
+                <button data-tab="media" class="tab-btn px-3 py-1 rounded-full text-zinc-400 hover:text-white">Media</button>
+                <button data-tab="mcp" class="tab-btn px-3 py-1 rounded-full text-zinc-400 hover:text-white">MCP</button>
+                <button data-tab="commerce" class="tab-btn px-3 py-1 rounded-full text-zinc-400 hover:text-white">x402</button>
+              </div>
+            </div>
+            <div class="p-5 font-mono text-[12.5px] leading-[1.7]">
+              <pre id="code-llm" class="code-pane"><span class="text-zinc-500">// 1. One SDK, auto cost-optimized routing</span>
+<span class="text-violet-400">from</span> <span class="text-cyan-300">openai</span> <span class="text-violet-400">import</span> OpenAI
+client = OpenAI(base_url=<span class="text-emerald-300">"https://api.omni.ai/v1"</span>, api_key=<span class="text-emerald-300">"omni_..."</span>)
+
+<span class="text-zinc-500"># auto picks DeepSeek V3 ($0.28/M) vs GPT-5 ($1.25/M) — 77% cheaper</span>
+resp = client.chat.completions.<span class="text-cyan-300">create</span>(
+  model=<span class="text-emerald-300">"auto"</span>,
+  messages=[{<span class="text-emerald-300">"role"</span>: <span class="text-emerald-300">"user"</span>, <span class="text-emerald-300">"content"</span>: <span class="text-emerald-300">"Classify: I love OMNI!"</span>}],
+  extra_body={<span class="text-emerald-300">"model_preferences"</span>: {<span class="text-emerald-300">"cost"</span>: <span class="text-amber-300">0.8</span>, <span class="text-emerald-300">"quality"</span>: <span class="text-amber-300">0.2</span>}},
+  <span class="text-emerald-300">fallback_models</span>=[<span class="text-emerald-300">"gpt-5-mini"</span>, <span class="text-emerald-300">"gemini-flash"</span>]
+)
+<span class="text-zinc-400"># → routed to deepseek-v3, saved $0.97/M, 42% cache hit</span>
+<span class="text-zinc-400"># → failover <50ms if OpenAI down</span></pre>
+
+              <pre id="code-media" class="code-pane hidden"><span class="text-zinc-500">// 2. Media — fal.ai compatible, one bill</span>
+images = client.images.<span class="text-cyan-300">generate</span>(
+  model=<span class="text-emerald-300">"flux-pro"</span>, prompt=<span class="text-emerald-300">"cyberpunk city, neon"</span>
+)
+video = client.<span class="text-cyan-300">videos</span>.<span class="text-cyan-300">generate</span>(
+  model=<span class="text-emerald-300">"veo-3"</span>, prompt=<span class="text-emerald-300">"drone shot of Tokyo"</span>
+)
+audio = client.audio.speech.<span class="text-cyan-300">create</span>(
+  model=<span class="text-emerald-300">"elevenlabs-tts"</span>, input=<span class="text-emerald-300">"Welcome to OMNI"</span>
+)
+<span class="text-zinc-400"># → same key, same budget, same audit log</span></pre>
+
+              <pre id="code-mcp" class="code-pane hidden"><span class="text-zinc-500">// 3. MCP Gateway — federate 100s of tools behind one endpoint</span>
+<span class="text-zinc-500">// mcp.json</span>
+{
+  <span class="text-emerald-300">"mcpServers"</span>: {
+    <span class="text-emerald-300">"omni"</span>: {
+      <span class="text-emerald-300">"url"</span>: <span class="text-emerald-300">"https://mcp.omni.ai/v1/acme"</span>,
+      <span class="text-emerald-300">"headers"</span>: {<span class="text-emerald-300">"Authorization"</span>: <span class="text-emerald-300">"Bearer omni_..."</span>}
+    }
+  }
+}
+<span class="text-zinc-500">// Agent sees unified tools/list:</span>
+<span class="text-zinc-400">// github__create_issue, postgres__query (requires approval)</span>
+<span class="text-zinc-400">// slack__post_message, omni__brave_search (monetized $0.001)</span>
+<span class="text-zinc-400">// → OAuth bundle, RBAC, PII masking, MLflow traces</span></pre>
+
+              <pre id="code-commerce" class="code-pane hidden"><span class="text-zinc-500">// 4. Commerce Gateway — monetize MCP tools in 5 lines (x402 + MPP)</span>
+<span class="text-violet-400">from</span> omni_commerce <span class="text-violet-400">import</span> paidTool
+
+@paidTool(price=<span class="text-amber-300">0.01</span>, currency=<span class="text-emerald-300">"USDC"</span>, chain=<span class="text-emerald-300">"base"</span>)
+<span class="text-violet-400">def</span> <span class="text-cyan-300">brave_search</span>(query: <span class="text-cyan-300">str</span>):
+    <span class="text-violet-400">return</span> search_api(query)
+
+<span class="text-zinc-500"># Client → Gateway 402 flow (Coinbase x402 V2 spec)</span>
+<span class="text-zinc-400"># 1. GET /mcp/tool → 402 + X-Payment-Amount: 1000</span>
+<span class="text-zinc-400"># 2. Pay USDC on Base, send X-Payment-Receipt header</span>
+<span class="text-zinc-400"># 3. Verified by facilitator, tool executes</span>
+<span class="text-zinc-400"># Same middleware supports MPP sessions + Stripe subscriptions</span></pre>
+            </div>
+            <div class="px-5 py-3 border-t border-white/5 bg-emerald-500/[0.04] flex items-center justify-between text-[11px] font-mono">
+              <span class="text-emerald-400">● Live gateway — 99.99% SLA • SOC2 Ready • < 15μs overhead</span>
+              <span class="text-zinc-500">auto → deepseek-v3 • cache HIT • saved $0.012</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Trust -->
+        <div class="mt-6 flex items-center gap-3 text-[11px] font-mono text-zinc-500">
+          <span>COMPATIBLE WITH</span>
+          <div class="flex items-center gap-2">
+            <span class="px-2 py-1 rounded bg-white/5 border border-white/5">OpenAI SDK</span>
+            <span class="px-2 py-1 rounded bg-white/5 border border-white/5">Vercel AI SDK</span>
+            <span class="px-2 py-1 rounded bg-white/5 border border-white/5">MCP 2026-07-28</span>
+            <span class="px-2 py-1 rounded bg-white/5 border border-white/5">LiteLLM cfg</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Metrics Strip -->
+<section class="border-y border-white/5 bg-white/[0.01]">
+  <div class="max-w-[1280px] mx-auto px-6 md:px-10 py-6 flex flex-wrap gap-8 md:gap-16 text-[12px] font-mono">
+    <div class="flex items-center gap-2"><span class="text-zinc-500">MODELS</span><span class="text-white font-semibold text-[13px]">500+ LLM + 1000+ Media + 30+ Expert</span></div>
+    <div class="flex items-center gap-2"><span class="text-zinc-500">MCP REGISTRY</span><span class="text-white font-semibold text-[13px]">17k+ Servers Federated</span></div>
+    <div class="flex items-center gap-2"><span class="text-zinc-500">CACHE</span><span class="text-emerald-400 font-semibold text-[13px]">40% Hit → -50% Cost</span></div>
+    <div class="flex items-center gap-2"><span class="text-zinc-500">PERF</span><span class="text-white font-semibold text-[13px]"><span class="text-violet-400">11μs</span> Target (Bifrost Beaten)</span></div>
+  </div>
+</section>
+
+<!-- Platform 3 Gateways -->
+<section id="platform" class="py-[100px] relative">
+  <div class="max-w-[1280px] mx-auto px-6 md:px-10">
+    <div class="flex items-end justify-between mb-12 flex-wrap gap-6">
+      <div>
+        <div class="text-[12px] font-mono tracking-[0.15em] text-violet-400 uppercase">The Platform</div>
+        <h2 class="mt-3 text-[36px] md:text-[48px] leading-[0.95] tracking-[-0.03em] font-semibold">Three Gateways,<br>One Control Plane</h2>
+      </div>
+      <p class="max-w-[420px] text-[15px] leading-[1.6] text-zinc-400">Not another LLM proxy. The operating system for production AI — routing, governance, and monetization in one.</p>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-6">
+      <!-- AI GW -->
+      <div class="group relative glass rounded-[20px] p-[1px] hover:bg-gradient-to-br hover:from-violet-600/30 hover:to-cyan-500/30 transition-all duration-500">
+        <div class="rounded-[19px] bg-[#0c0c0f] p-7 h-full">
+          <div class="w-10 h-10 rounded-[12px] bg-gradient-to-br from-violet-600 to-cyan-400 flex items-center justify-center text-black font-mono font-bold mb-5">AI</div>
+          <h3 class="text-[18px] font-semibold tracking-tight">AI Gateway</h3>
+          <div class="mt-2 text-[11px] font-mono text-zinc-500 tracking-wide">LATENCY • COST • QUALITY</div>
+          <ul class="mt-6 space-y-3 text-[13px] leading-[1.5] text-zinc-400">
+            <li class="flex gap-2"><span class="text-violet-400">→</span><span><b class="text-white">500+ LLMs</b> via auto router (cost-aware, latency-based, weighted, fallback <50ms)</span></li>
+            <li class="flex gap-2"><span class="text-violet-400">→</span><span><b class="text-white">Semantic + Exact Cache</b> 40% hit rate target, Qdrant + Redis</span></li>
+            <li class="flex gap-2"><span class="text-violet-400">→</span><span><b class="text-white">Token-Aware</b> rate limiting, hierarchical budgets (org→team→user→key)</span></li>
+            <li class="flex gap-2"><span class="text-violet-400">→</span><span>OpenAI-compatible, LiteLLM config.yaml drop-in</span></li>
+          </ul>
+          <div class="mt-6 text-[11px] font-mono px-2.5 py-1.5 rounded-full bg-white/5 border border-white/5 inline-flex">competes: OpenRouter, Portkey, LiteLLM, Bifrost</div>
+        </div>
+      </div>
+      <!-- MCP GW -->
+      <div class="group relative glass rounded-[20px] p-[1px] hover:bg-gradient-to-br hover:from-fuchsia-600/30 hover:to-violet-500/30 transition-all duration-500">
+        <div class="rounded-[19px] bg-[#0c0c0f] p-7 h-full">
+          <div class="w-10 h-10 rounded-[12px] bg-gradient-to-br from-fuchsia-500 to-violet-600 flex items-center justify-center text-white font-mono font-bold mb-5">MCP</div>
+          <h3 class="text-[18px] font-semibold tracking-tight">MCP Gateway</h3>
+          <div class="mt-2 text-[11px] font-mono text-zinc-500 tracking-wide">FEDERATION • GOVERNANCE • AUDIT</div>
+          <ul class="mt-6 space-y-3 text-[13px] leading-[1.5] text-zinc-400">
+            <li class="flex gap-2"><span class="text-fuchsia-400">→</span><span><b class="text-white">Federate</b> 100s MCP servers behind one spec-compliant URL (2026-07-28 RC stateless)</span></li>
+            <li class="flex gap-2"><span class="text-fuchsia-400">→</span><span><b class="text-white">Virtual Servers:</b> compose approved tools per team, Docker isolation per server image signing</span></li>
+            <li class="flex gap-2"><span class="text-fuchsia-400">→</span><span><b class="text-white">Governance:</b> OAuth 2.0 bundle (RFC 9207 iss), RBAC, approval flows, PII/secret masking, MLflow traces</span></li>
+            <li class="flex gap-2"><span class="text-fuchsia-400">→</span><span>EU AI Act ready: LLM reasoning → tool invocation audit</span></li>
+          </ul>
+          <div class="mt-6 text-[11px] font-mono px-2.5 py-1.5 rounded-full bg-white/5 border border-white/5 inline-flex">competes: Zuplo MCP, Bifrost, Kong, Red Hat</div>
+        </div>
+      </div>
+      <!-- Commerce GW -->
+      <div class="group relative glass rounded-[20px] p-[1px] hover:bg-gradient-to-br hover:from-cyan-500/30 hover:to-emerald-500/30 transition-all duration-500">
+        <div class="rounded-[19px] bg-[#0c0c0f] p-7 h-full border border-emerald-500/20">
+          <div class="w-10 h-10 rounded-[12px] bg-gradient-to-br from-emerald-400 to-cyan-400 flex items-center justify-center text-black font-mono font-bold mb-5">$</div>
+          <h3 class="text-[18px] font-semibold tracking-tight">Commerce Gateway <span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500 text-black font-mono ml-2 -top-0.5 relative">NEW</span></h3>
+          <div class="mt-2 text-[11px] font-mono text-zinc-500 tracking-wide">x402 + MPP + STRIPE</div>
+          <ul class="mt-6 space-y-3 text-[13px] leading-[1.5] text-zinc-400">
+            <li class="flex gap-2"><span class="text-emerald-400">→</span><span><b class="text-white">x402 V2</b> (Coinbase) USDC on Base/Solana — 5 lines to charge $0.001/call</span></li>
+            <li class="flex gap-2"><span class="text-emerald-400">→</span><span><b class="text-white">Stripe MPP</b> (Mar 18 2026) sessions with caps, fiat, merchant acceptance, fraud</span></li>
+            <li class="flex gap-2"><span class="text-emerald-400">→</span><span><b class="text-white">Hybrid Middleware</b> — one middleware supports API key, MPP session, x402 receipt, 402 flow</span></li>
+            <li class="flex gap-2"><span class="text-emerald-400">→</span><span>Tool builder dashboard: USDC + fiat payouts via Stripe Connect</span></li>
+          </ul>
+          <div class="mt-6 text-[11px] font-mono px-2.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 inline-flex">world's first gateway with native monetization</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Cost Intelligence -->
+<section class="py-[80px] bg-white/[0.01] border-y border-white/5">
+  <div class="max-w-[1280px] mx-auto px-6 md:px-10 grid lg:grid-cols-2 gap-12 items-center">
+    <div>
+      <div class="text-[12px] font-mono tracking-[0.15em] text-emerald-400 uppercase">Cost Intelligence Engine</div>
+      <h3 class="mt-3 text-[32px] leading-[0.95] tracking-[-0.02em] font-semibold">FinOps for AI.<br>Cut spend 50% with no code.</h3>
+      <p class="mt-4 text-[15px] leading-[1.6] text-zinc-400 max-w-[480px]">Price spread is 18x: DeepSeek $0.28/M vs Claude $5/M. Our eval harness finds cheapest model meeting your quality bar.</p>
+
+      <div class="mt-8 space-y-4">
+        <div class="glass rounded-[12px] p-4 flex items-center justify-between">
+          <div class="flex items-center gap-3"><div class="w-2 h-2 rounded-full bg-emerald-400"></div><span class="text-[13px] font-mono">GPT-5 → DeepSeek V3 for classification</span></div>
+          <span class="text-[12px] font-mono px-2 py-1 rounded bg-emerald-500/10 text-emerald-400">-77% cost, 91% parity</span>
+        </div>
+        <div class="glass rounded-[12px] p-4 flex items-center justify-between">
+          <div class="flex items-center gap-3"><div class="w-2 h-2 rounded-full bg-cyan-400"></div><span class="text-[13px] font-mono">Enable semantic cache: summarize template</span></div>
+          <span class="text-[12px] font-mono px-2 py-1 rounded bg-cyan-500/10 text-cyan-400">60% HIT POTENTIAL</span>
+        </div>
+        <div class="glass rounded-[12px] p-4 flex items-center justify-between">
+          <div class="flex items-center gap-3"><div class="w-2 h-2 rounded-full bg-amber-400"></div><span class="text-[13px] font-mono">Prompt compression LLMLingua v2</span></div>
+          <span class="text-[12px] font-mono px-2 py-1 rounded bg-amber-500/10 text-amber-400">-30% tokens</span>
+        </div>
+      </div>
+    </div>
+    <div class="relative">
+      <div class="glass-strong rounded-[16px] p-6 border border-white/10">
+        <div class="flex items-center justify-between mb-6">
+          <span class="text-[12px] font-mono text-zinc-400">COST vs QUALITY PARETO — 7d</span>
+          <span class="text-[11px] font-mono px-2 py-1 rounded-full bg-emerald-500 text-black">YOU SAVED $390.70</span>
+        </div>
+        <div class="space-y-3 font-mono text-[11px]">
+          <div class="flex items-center gap-3"><span class="w-[140px] text-zinc-500">deepseek-v3</span><div class="flex-1 h-[8px] rounded-full bg-zinc-800 overflow-hidden"><div class="h-full bg-gradient-to-r from-emerald-400 to-cyan-400" style="width:91%"></div></div><span class="w-12 text-right text-emerald-400">$0.28/M</span><span class="w-10 text-right text-zinc-400">91%</span></div>
+          <div class="flex items-center gap-3"><span class="w-[140px] text-zinc-500">gpt-5-nano</span><div class="flex-1 h-[8px] rounded-full bg-zinc-800 overflow-hidden"><div class="h-full bg-zinc-600" style="width:82%"></div></div><span class="w-12 text-right">$0.05/M</span><span class="w-10 text-right text-zinc-400">82%</span></div>
+          <div class="flex items-center gap-3"><span class="w-[140px] text-white">gpt-5-mini ★ rec</span><div class="flex-1 h-[8px] rounded-full bg-zinc-800 overflow-hidden"><div class="h-full bg-gradient-to-r from-violet-500 to-fuchsia-500" style="width:92%"></div></div><span class="w-12 text-right">$0.25/M</span><span class="w-10 text-right">92%</span></div>
+          <div class="flex items-center gap-3"><span class="w-[140px] text-zinc-500">claude-haiku-4.5</span><div class="flex-1 h-[8px] rounded-full bg-zinc-800 overflow-hidden"><div class="h-full bg-zinc-600" style="width:88%"></div></div><span class="w-12 text-right">$1.0/M</span><span class="w-10 text-right text-zinc-400">88%</span></div>
+          <div class="flex items-center gap-3"><span class="w-[140px] text-zinc-500">gpt-5 (baseline)</span><div class="flex-1 h-[8px] rounded-full bg-zinc-800 overflow-hidden"><div class="h-full bg-red-500/50" style="width:97%"></div></div><span class="w-12 text-right">$1.25/M</span><span class="w-10 text-right">97%</span></div>
+        </div>
+        <div class="mt-6 grid grid-cols-3 gap-3 text-[11px] font-mono">
+          <div class="rounded-[10px] bg-white/5 p-3"><div class="text-zinc-500">TOTAL SAVED</div><div class="text-[16px] font-semibold text-emerald-400 mt-1">$390.70 / 7d</div></div>
+          <div class="rounded-[10px] bg-white/5 p-3"><div class="text-zinc-500">CACHE HIT</div><div class="text-[16px] font-semibold text-white mt-1">42% → $210</div></div>
+          <div class="rounded-[10px] bg-white/5 p-3"><div class="text-zinc-500">ROUTING</div><div class="text-[16px] font-semibold text-white mt-1">- $180 saved</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MCP Registry -->
+<section id="mcp" class="py-[100px]">
+  <div class="max-w-[1280px] mx-auto px-6 md:px-10">
+    <div class="flex flex-wrap items-end justify-between gap-6 mb-10">
+      <div>
+        <div class="text-[12px] font-mono tracking-[0.15em] text-fuchsia-400 uppercase">MCP Registry — npm for MCP</div>
+        <h2 class="mt-3 text-[32px] tracking-[-0.02em] font-semibold">500+ curated, 17k+ federated.<br>One endpoint to rule them.</h2>
+      </div>
+      <div class="flex items-center gap-3">
+        <input id="registrySearch" placeholder="Search tools… github, postgres, slack" class="w-[300px] px-4 py-2.5 rounded-full bg-white/5 border border-white/10 text-[13px] font-mono placeholder:text-zinc-600 focus:outline-none focus:border-violet-500/50">
+        <span class="text-[11px] font-mono text-zinc-500">mcp.so 17k • Glama 12.6k • Smithery 7.3k • AAIF Official</span>
+      </div>
+    </div>
+
+    <div id="registryGrid" class="grid md:grid-cols-3 lg:grid-cols-4 gap-4">
+      <!-- JS will populate -->
+    </div>
+
+    <div class="mt-10 flex justify-center">
+      <a href="#" class="px-6 py-3 rounded-full glass text-[13px] font-mono hover:bg-white/10 transition">View Full Registry — registry.omni.ai →</a>
+    </div>
+  </div>
+</section>
+
+<!-- Performance Benchmark -->
+<section class="py-[80px] bg-[#0a0a0f] border-y border-white/5">
+  <div class="max-w-[1280px] mx-auto px-6 md:px-10">
+    <div class="grid lg:grid-cols-2 gap-12 items-center">
+      <div>
+        <div class="text-[12px] font-mono tracking-[0.15em] text-cyan-400 uppercase">Performance</div>
+        <h3 class="mt-3 text-[28px] font-semibold tracking-tight">11μs overhead target.<br>10x faster than LiteLLM.</h3>
+        <p class="mt-3 text-[14px] text-zinc-400 leading-[1.6]">Agent workflows compound gateway latency at each step (LLM → tool → LLM). Bifrost proved 11μs at 5k RPS with Go. We target same with Envoy data plane. Python gateways can't compete.</p>
+        <ul class="mt-6 text-[13px] text-zinc-400 space-y-2 font-mono">
+          <li>● Go data plane + Envoy WASM filters (Higress pattern)</li>
+          <li>● Semantic cache <5ms Redis, <15ms Qdrant</li>
+          <li>● Stateless MCP 2026-07-28 RC — plain round-robin LB, no sticky sessions</li>
+          <li>● 300+ edge PoPs — sub-20ms p95 like Zuplo + Vercel</li>
+        </ul>
+      </div>
+      <div class="glass rounded-[16px] p-6">
+        <div class="text-[11px] font-mono text-zinc-500 mb-6">OVERHEAD p50 @ 5k RPS — LOWER IS BETTER</div>
+        <div class="space-y-4">
+          <div><div class="flex justify-between text-[12px] font-mono mb-1"><span>LiteLLM (Python)</span><span class="text-zinc-500">2500μs</span></div><div class="h-3 rounded-full bg-zinc-800 overflow-hidden"><div class="h-full bg-red-500/60" style="width:100%"></div></div></div>
+          <div><div class="flex justify-between text-[12px] font-mono mb-1"><span>Portkey (Node)</span><span class="text-zinc-500">~400μs</span></div><div class="h-3 rounded-full bg-zinc-800 overflow-hidden"><div class="h-full bg-amber-500/60" style="width:32%"></div></div></div>
+          <div><div class="flex justify-between text-[12px] font-mono mb-1"><span>Cloudflare AI GW</span><span class="text-zinc-500">~50μs edge</span></div><div class="h-3 rounded-full bg-zinc-800 overflow-hidden"><div class="h-full bg-cyan-500/60" style="width:12%"></div></div></div>
+          <div><div class="flex justify-between text-[12px] font-mono mb-1"><span class="text-white font-semibold">OMNI (Go/Rust Envoy)</span><span class="text-emerald-400">15μs target</span></div><div class="h-3 rounded-full bg-zinc-800 overflow-hidden"><div class="h-full bg-gradient-to-r from-violet-500 to-emerald-400" style="width:6%"></div></div></div>
+          <div><div class="flex justify-between text-[12px] font-mono mb-1"><span>Bifrost (Go - best today)</span><span class="text-zinc-400">11μs</span></div><div class="h-3 rounded-full bg-zinc-800 overflow-hidden"><div class="h-full bg-zinc-500" style="width:4.5%"></div></div></div>
+        </div>
+        <div class="mt-6 text-[11px] font-mono text-zinc-500">Benchmark methodology: same OpenAI-compatible endpoint, same provider (Anthropic), 5k RPS, measuring gateway overhead only — per Maxim AI Bifrost blog.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Compare -->
+<section id="compare" class="py-[100px]">
+  <div class="max-w-[1280px] mx-auto px-6 md:px-10">
+    <h2 class="text-[32px] font-semibold tracking-tight text-center">Why OMNI vs OpenRouter, Portkey, LiteLLM, Zuplo?</h2>
+    <p class="mt-3 text-center text-[14px] text-zinc-400 max-w-[640px] mx-auto">No one bundles broadest catalog + deepest governance + fastest perf + MCP + media + monetization. We do.</p>
+
+    <div class="mt-12 overflow-x-auto">
+      <table class="w-full text-[13px] border-collapse">
+        <thead>
+          <tr class="border-b border-white/10 text-[11px] font-mono tracking-wide text-zinc-500 uppercase">
+            <th class="text-left py-3 px-3 font-medium">Feature</th>
+            <th class="text-left py-3 px-3">OpenRouter</th>
+            <th class="text-left py-3 px-3">Portkey</th>
+            <th class="text-left py-3 px-3">LiteLLM (46k⭐)</th>
+            <th class="text-left py-3 px-3">Zuplo MCP</th>
+            <th class="text-left py-3 px-3 bg-violet-500/10 text-white rounded-t-[12px]">OMNI (Us)</th>
+          </tr>
+        </thead>
+        <tbody class="font-mono text-[12px]">
+          <tr class="border-b border-white/5"><td class="py-3 px-3 text-zinc-400">Models (LLM)</td><td class="px-3">500+ ✅</td><td class="px-3">160+ BYOK</td><td class="px-3">100+</td><td class="px-3">Multi</td><td class="px-3 bg-violet-500/10 text-white">500+ ✅</td></tr>
+          <tr class="border-b border-white/5"><td class="py-3 px-3 text-zinc-400">Media (Img/Vid/Aud)</td><td class="px-3">Partial</td><td class="px-3">Depends</td><td class="px-3">Depends</td><td class="px-3">No</td><td class="px-3 bg-violet-500/10 text-white"><b>1000+ via fal.ai/Replicate ✅</b></td></tr>
+          <tr class="border-b border-white/5"><td class="py-3 px-3 text-zinc-400">Expert (OCR/STT/TTS)</td><td class="px-3">No</td><td class="px-3">No</td><td class="px-3">No</td><td class="px-3">No</td><td class="px-3 bg-violet-500/10 text-white"><b>30+ (Deepgram, Mistral OCR) ✅</b></td></tr>
+          <tr class="border-b border-white/5"><td class="py-3 px-3 text-zinc-400">Governance (RBAC, PII, audit)</td><td class="px-3 text-zinc-500">Limited</td><td class="px-3 text-emerald-400">Strong (Gartner) ✅</td><td class="px-3">Custom</td><td class="px-3 text-emerald-400">Strong ✅</td><td class="px-3 bg-violet-500/10 text-emerald-300"><b>Portkey-level + EU AI Act ✅</b></td></tr>
+          <tr class="border-b border-white/5"><td class="py-3 px-3 text-zinc-400">MCP Gateway</td><td class="px-3 text-zinc-500">No</td><td class="px-3">GA ✅</td><td class="px-3">Built-in ✅</td><td class="px-3 text-emerald-400">Best ✅</td><td class="px-3 bg-violet-500/10 text-emerald-300"><b>Zuplo-class + Registry 17k ✅</b></td></tr>
+          <tr class="border-b border-white/5"><td class="py-3 px-3 text-zinc-400">Agentic Payments x402+MPP</td><td class="px-3 text-zinc-500">No</td><td class="px-3 text-zinc-500">No</td><td class="px-3 text-zinc-500">No</td><td class="px-3 text-zinc-500">Vision</td><td class="px-3 bg-violet-500/10 text-emerald-300"><b>Native V2 + MPP ✅ FIRST</b></td></tr>
+          <tr class="border-b border-white/5"><td class="py-3 px-3 text-zinc-400">Perf overhead</td><td class="px-3">Medium</td><td class="px-3"><1ms claim</td><td class="px-3 text-red-300">Python slow</td><td class="px-3 text-emerald-400">Sub-20ms ✅</td><td class="px-3 bg-violet-500/10 text-emerald-300"><b>11-15μs Go target ✅</b></td></tr>
+          <tr class="border-b border-white/5"><td class="py-3 px-3 text-zinc-400">Semantic Cache / Cost AI</td><td class="px-3 text-zinc-500">No</td><td class="px-3">Caching ✅</td><td class="px-3">Routing</td><td class="px-3">Cache</td><td class="px-3 bg-violet-500/10 text-white"><b>40% hit + Pareto AI ✅</b></td></tr>
+          <tr><td class="py-3 px-3 text-zinc-400">Open-Core</td><td class="px-3">No</td><td class="px-3">Yes</td><td class="px-3">Yes (Apache)</td><td class="px-3">No</td><td class="px-3 bg-violet-500/10 rounded-b-[12px] text-white"><b>Apache 2.0 data plane ✅</b></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- Pricing -->
+<section id="pricing" class="py-[100px] bg-white/[0.01] border-y border-white/5">
+  <div class="max-w-[1280px] mx-auto px-6 md:px-10">
+    <h2 class="text-[32px] font-semibold tracking-tight text-center">Transparent pricing. Pays for itself.</h2>
+    <p class="mt-3 text-center text-[14px] text-zinc-400">We charge 8-15% platform fee but save 50% via cache + routing. Net -38% vs provider direct. Like Requesty 5% transparent, not OpenRouter hidden.</p>
+
+    <div class="mt-12 grid md:grid-cols-4 gap-6">
+      <div class="glass rounded-[20px] p-6">
+        <div class="text-[12px] font-mono tracking-wide text-zinc-500">FREE</div>
+        <div class="mt-2 text-[28px] font-semibold">$0</div>
+        <div class="text-[12px] font-mono text-zinc-500">10k req/mo • 1M tokens</div>
+        <ul class="mt-6 space-y-2 text-[13px] text-zinc-400">
+          <li>✓ 1 team member</li><li>✓ Community support</li><li>✓ 100 media gens</li><li>✓ 100 MCP calls</li><li>✓ Exact cache</li>
+        </ul>
+        <button class="mt-6 w-full py-2.5 rounded-full bg-white/10 text-[13px] font-medium">Start Free</button>
+      </div>
+      <div class="glass rounded-[20px] p-6 border border-violet-500/30 relative">
+        <div class="absolute -top-3 left-1/2 -translate-x-1/2 px-2.5 py-0.5 rounded-full bg-violet-500 text-[10px] font-mono text-white">MOST POPULAR</div>
+        <div class="text-[12px] font-mono tracking-wide text-violet-400">PRO</div>
+        <div class="mt-2 text-[28px] font-semibold">$49<span class="text-[14px] font-normal text-zinc-500">/mo</span></div>
+        <div class="text-[12px] font-mono text-zinc-500">100k req/mo • 10M tokens • 12% fee</div>
+        <ul class="mt-6 space-y-2 text-[13px] text-zinc-400">
+          <li>✓ 5 team members</li><li>✓ Virtual keys, budgets</li><li>✓ Semantic cache (Qdrant)</li><li>✓ 1000 media gens</li><li>✓ 10k MCP calls</li><li>✓ Email support</li>
+        </ul>
+        <button class="mt-6 w-full py-2.5 rounded-full bg-white text-black text-[13px] font-medium">Start Pro Trial</button>
+      </div>
+      <div class="glass rounded-[20px] p-6">
+        <div class="text-[12px] font-mono tracking-wide text-zinc-500">SCALE</div>
+        <div class="mt-2 text-[28px] font-semibold">$499<span class="text-[14px] font-normal text-zinc-500">/mo</span></div>
+        <div class="text-[12px] font-mono text-zinc-500">1M req/mo • 100M tokens • 10% fee</div>
+        <ul class="mt-6 space-y-2 text-[13px] text-zinc-400">
+          <li>✓ 25 members • SSO</li><li>✓ TS policies, audit 30d</li><li>✓ Cost AI Pareto</li><li>✓ 10k media</li><li>✓ 100k MCP calls</li><li>✓ Slack support</li>
+        </ul>
+        <button class="mt-6 w-full py-2.5 rounded-full bg-white/10 text-[13px] font-medium">Start Scale</button>
+      </div>
+      <div class="glass-strong rounded-[20px] p-6 border border-white/20">
+        <div class="text-[12px] font-mono tracking-wide text-emerald-400">ENTERPRISE</div>
+        <div class="mt-2 text-[28px] font-semibold">$5k+<span class="text-[14px] font-normal text-zinc-500">/mo</span></div>
+        <div class="text-[12px] font-mono text-zinc-500">Unlimited • 8% fee • 99.99% SLA</div>
+        <ul class="mt-6 space-y-2 text-[13px] text-zinc-400">
+          <li>✓ SOC2/HIPAA/EU AI Act</li><li>✓ Self-hosted data plane</li><li>✓ Data residency, KMS</li><li>✓ SAML SCIM, SIEM export</li><li>✓ BAA/DPA, TAM</li><li>✓ A2A Gateway</li>
+        </ul>
+        <button class="mt-6 w-full py-2.5 rounded-full bg-emerald-500 text-black text-[13px] font-medium">Talk to Founding Team</button>
+      </div>
+    </div>
+
+    <div class="mt-12 text-center">
+      <div class="inline-flex gap-6 text-[11px] font-mono text-zinc-500 glass rounded-full px-6 py-3">
+        <span>Marketplace take 10-15% • MCP tax 5% • Stripe metered • x402 USDC payouts via Circle</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Roadmap CTA -->
+<section class="py-[80px]">
+  <div class="max-w-[1280px] mx-auto px-6 md:px-10">
+    <div class="rounded-[24px] bg-gradient-to-br from-violet-900/30 via-cyan-900/20 to-fuchsia-900/20 border border-white/10 p-10 md:p-14 relative overflow-hidden">
+      <div class="absolute inset-0 grid-bg opacity-20"></div>
+      <div class="relative grid md:grid-cols-2 gap-10 items-center">
+        <div>
+          <div class="text-[12px] font-mono tracking-[0.15em] text-violet-300 uppercase">Roadmap to $1M ARR • 12 Months</div>
+          <h3 class="mt-3 text-[28px] leading-[1.1] font-semibold tracking-tight">We ship in public.<br>Open-core, Apache 2.0 data plane.</h3>
+          <div class="mt-6 grid grid-cols-2 gap-3 text-[12px] font-mono">
+            <div class="glass rounded-[10px] p-3"><span class="text-zinc-500">M0-2</span><div class="text-white mt-1">LiteLLM compat MVP, 100+ providers, Go</div></div>
+            <div class="glass rounded-[10px] p-3"><span class="text-zinc-500">M2-4</span><div class="text-white mt-1">Governance: <20μs, token budgets, cache</div></div>
+            <div class="glass rounded-[10px] p-3"><span class="text-violet-400">M4-7 NOW</span><div class="text-white mt-1">MCP Gateway w/ spec 2026-07-28 RC final</div></div>
+            <div class="glass rounded-[10px] p-3"><span class="text-zinc-500">M9-11</span><div class="text-white mt-1">x402+MPP commerce + Cost AI</div></div>
+          </div>
+        </div>
+        <div class="text-center md:text-left">
+          <p class="text-[15px] leading-[1.6] text-zinc-300">The window is <b class="text-white">now</b>: MCP spec final July 28 2026 + x402 Foundation July 16 2026 with Visa/Stripe/Google. 12-month rush before Kong/Cloudflare consolidate — like API GW history repeating.</p>
+          <div class="mt-6 flex flex-wrap gap-3">
+            <a href="#" class="px-6 py-3 rounded-full bg-white text-black font-medium text-[14px]">⭐ Star on GitHub — 1.2k</a>
+            <a href="#" class="px-6 py-3 rounded-full glass text-[14px] font-medium">Read Roadmap → docs/06-roadmap.md</a>
+          </div>
+          <div class="mt-6 text-[11px] font-mono text-zinc-500">LiteLLM has 46k stars, 295M PyPI downloads Jan 2026 • Portkey 10B tokens/day • Our compat layer = instant migration</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="border-t border-white/5 py-10">
+  <div class="max-w-[1280px] mx-auto px-6 md:px-10 flex flex-col md:flex-row justify-between gap-8 text-[13px]">
+    <div>
+      <div class="flex items-center gap-2"><div class="w-6 h-6 rounded bg-gradient-to-br from-violet-600 to-cyan-400 flex items-center justify-center font-mono font-bold text-black text-[12px]">O</div><span class="font-semibold">OMNI</span><span class="text-[10px] px-1.5 py-0.5 rounded bg-white/10 font-mono ml-2">Apache 2.0</span></div>
+      <div class="mt-3 text-[12px] text-zinc-500 max-w-[320px] leading-[1.5]">Unified AI API Platform. Any Model, Any Modality, Any Tool, One API. Built to compete with OpenRouter, Portkey, LiteLLM, Zuplo, Bifrost, fal.ai. July 2026 ready for MCP 2026-07-28 RC + x402 V2 + MPP.</div>
+    </div>
+    <div class="grid grid-cols-3 gap-10 text-[12px] font-mono">
+      <div><div class="text-zinc-500 uppercase tracking-wide text-[11px] mb-3">Product</div><div class="space-y-2 text-zinc-400"><a class="block hover:text-white" href="#">AI Gateway</a><a class="block hover:text-white" href="#">MCP Gateway</a><a class="block hover:text-white" href="#">Commerce GW</a><a class="block hover:text-white" href="#">Cost AI</a><a class="block hover:text-white" href="#">Media Plane</a></div></div>
+      <div><div class="text-zinc-500 uppercase tracking-wide text-[11px] mb-3">Resources</div><div class="space-y-2 text-zinc-400"><a class="block hover:text-white" href="#">Docs</a><a class="block hover:text-white" href="#">Registry</a><a class="block hover:text-white" href="#">Benchmarks</a><a class="block hover:text-white" href="#">GitHub</a><a class="block hover:text-white" href="#">API Status 99.99%</a></div></div>
+      <div><div class="text-zinc-500 uppercase tracking-wide text-[11px] mb-3">Company</div><div class="space-y-2 text-zinc-400"><a class="block hover:text-white" href="#">Pricing</a><a class="block hover:text-white" href="#">Enterprise</a><a class="block hover:text-white" href="#">SOC2/HIPAA</a><a class="block hover:text-white" href="#">Contact Founding Team</a><a class="block hover:text-white" href="mailto:founders@omni.ai">founders@omni.ai</a></div></div>
+    </div>
+  </div>
+  <div class="max-w-[1280px] mx-auto px-6 md:px-10 mt-10 pt-6 border-t border-white/5 flex justify-between text-[11px] font-mono text-zinc-600">
+    <span>© 2026 OMNI Labs, Inc. Built with Envoy, Go, Qdrant, ClickHouse, Stripe, Coinbase x402. Open-core.</span>
+    <span class="hidden md:inline">Market: $12.5B API spend 2025 • Gartner 75% MCP by EOY 2026 • x402 Foundation July 16 2026</span>
+  </div>
+</footer>
+
+<script>
+// Tabs
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    const tab = btn.dataset.tab;
+    document.querySelectorAll('.tab-btn').forEach(b=>{b.classList.remove('bg-white','text-black'); b.classList.add('text-zinc-400')});
+    btn.classList.add('bg-white','text-black'); btn.classList.remove('text-zinc-400');
+    document.querySelectorAll('.code-pane').forEach(p=>p.classList.add('hidden'));
+    document.getElementById('code-'+tab).classList.remove('hidden');
+  });
+});
+
+// MCP Registry mock data - from docs competitive research
+const registryData = [
+  {name:'github', cat:'developer', desc:'GitHub issues, PRs, repos — most installed MCP', installs: 15420, trust: 96, auth:'oauth', price:null},
+  {name:'postgres', cat:'database', desc:'Postgres query — sensitive, requires approval', installs: 8920, trust: 92, auth:'api_key', price:null, sensitive:true},
+  {name:'slack', cat:'communication', desc:'Slack messages, channels, threads', installs: 12340, trust: 94, auth:'oauth', price:null},
+  {name:'brave-search', cat:'search', desc:'Web search $0.001/call via x402 USDC', installs: 4320, trust: 88, auth:'none', price:0.001},
+  {name:'filesystem', cat:'utility', desc:'Local FS — container isolated', installs: 10230, trust: 85, auth:'none', price:null},
+  {name:'linear', cat:'project', desc:'Linear issues, cycles — RBAC', installs: 5640, trust: 91, auth:'oauth', price:null},
+  {name:'notion', cat:'knowledge', desc:'Notion DBs, pages — OAuth', installs: 7890, trust: 93, auth:'oauth', price:null},
+  {name:'stripe', cat:'payments', desc:'Stripe invoices, customers — $0.01/call', installs: 2100, trust: 95, auth:'oauth', price:0.01},
+];
+
+function renderRegistry(filter=''){
+  const grid = document.getElementById('registryGrid');
+  const f = filter.toLowerCase();
+  const filtered = registryData.filter(s=> !f || s.name.includes(f) || s.desc.toLowerCase().includes(f) || s.cat.includes(f));
+  grid.innerHTML = filtered.map(s=>`
+    <div class="glass rounded-[14px] p-4 hover:bg-white/[0.06] transition group">
+      <div class="flex items-start justify-between">
+        <div class="flex items-center gap-2"><div class="w-8 h-8 rounded-[8px] bg-white/5 border border-white/10 flex items-center justify-center text-[13px] font-mono">${s.name[0].toUpperCase()}</div><div><div class="text-[13px] font-semibold font-mono">${s.name}</div><div class="text-[10px] font-mono text-zinc-500 uppercase">${s.cat} • ${s.auth}</div></div></div>
+        <span class="text-[10px] font-mono px-1.5 py-0.5 rounded-full ${s.trust>90?'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20':'bg-white/5 text-zinc-400'}">${s.trust}% TRUST</span>
+      </div>
+      <div class="mt-3 text-[12px] leading-[1.5] text-zinc-400">${s.desc}</div>
+      <div class="mt-3 flex items-center justify-between text-[11px] font-mono">
+        <span class="text-zinc-500">${s.installs.toLocaleString()} installs</span>
+        ${s.price?`<span class="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">${s.price} USDC/call • x402</span>`:`<span class="px-2 py-0.5 rounded-full bg-white/5 text-zinc-400">FREE • ${s.sensitive?'needs approval':'auto-allow'}</span>`}
+      </div>
+    </div>
+  `).join('');
+}
+renderRegistry();
+document.getElementById('registrySearch').addEventListener('input', e=>renderRegistry(e.target.value));
+</script>
+
+</body>
+</html>
