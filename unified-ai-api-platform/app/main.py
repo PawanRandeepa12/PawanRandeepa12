@@ -14,7 +14,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from app import __version__
-from app.api.routes import chat, cost, health, models
+from app.api.routes import chat, cost, health, models, routing
 from app.config import Settings, get_settings
 from app.core.exceptions import register_exception_handlers
 from app.core.logging import get_logger, setup_logging
@@ -25,6 +25,9 @@ from app.services.cost.budgets import BudgetManager
 from app.services.cost.pricing import PricingDatabase
 from app.services.cost.tracker import CostTracker
 from app.services.gateway import ChatGateway
+from app.services.routing.health import HealthMonitor
+from app.services.routing.latency import LatencyTracker
+from app.services.routing.router import RoutingEngine
 
 logger = get_logger(__name__)
 
@@ -51,12 +54,27 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         app.state.cost_tracker = tracker
         app.state.cost_analytics = CostAnalytics(tracker)
         app.state.budgets = budgets
-        app.state.gateway = ChatGateway(settings, registry, pricing=pricing, tracker=tracker, budgets=budgets)
 
-        # --- Later stages (wired in by Stages 3-4) ---------------------------
-        app.state.latency = None          # Stage 3: LatencyTracker
-        app.state.health_monitor = None   # Stage 3: HealthMonitor
-        app.state.router_engine = None    # Stage 3: RoutingEngine
+        # --- Stage 3: intelligent routing --------------------------------------
+        latency_tracker = LatencyTracker()
+        health_monitor = HealthMonitor(registry, settings)
+        await health_monitor.start()
+        router_engine = RoutingEngine(settings, registry, health_monitor, latency_tracker, pricing)
+        app.state.latency = latency_tracker
+        app.state.health_monitor = health_monitor
+        app.state.router_engine = router_engine
+        app.state.gateway = ChatGateway(
+            settings,
+            registry,
+            pricing=pricing,
+            tracker=tracker,
+            budgets=budgets,
+            router=router_engine,
+            health=health_monitor,
+            latency=latency_tracker,
+        )
+
+        # --- Later stages (wired in by Stage 4) --------------------------------
         app.state.cache = None            # Stage 4: ResponseCache
         app.state.rate_limiter = None     # Stage 4: RateLimiter
         app.state.executor = None         # Stage 4: PriorityExecutor
@@ -70,6 +88,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         try:
             yield
         finally:
+            await app.state.health_monitor.stop()
             await registry.aclose()
             logger.info("platform stopped")
 
@@ -92,6 +111,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(models.router)
     app.include_router(chat.router)
     app.include_router(cost.router)
+    app.include_router(routing.router)
 
     @app.get("/", include_in_schema=False)
     async def root() -> dict:
@@ -110,6 +130,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                 "chat": "POST /v1/chat/completions",
                 "models": "GET /v1/models",
                 "cost": "POST /v1/cost/estimate, POST /v1/cost/compare, GET /v1/cost/summary, GET /v1/cost/budgets",
+                "routing": "POST /v1/routing/route, GET /v1/routing/health, GET /v1/routing/latency",
                 "health": "GET /health, GET /ready",
             },
         }

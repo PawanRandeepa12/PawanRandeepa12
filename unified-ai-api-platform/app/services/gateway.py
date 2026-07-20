@@ -1,9 +1,11 @@
 """Chat gateway — orchestrates the request lifecycle.
 
 Stage 1: explicit / first-available model selection + provider call.
-Stage 2 (this version): adds pre-call global budget enforcement and post-call
-cost computation, usage recording and budget threshold alerts.
-Stage 3 will replace `_select_model` with strategy-driven routing & failover.
+Stage 2: pre-call global budget enforcement + post-call cost tracking/alerts.
+Stage 3 (this version): the routing engine picks ordered candidates per
+strategy (cost / latency / balanced / explicit); the gateway walks the list
+and fails over on provider errors while reporting outcomes to the health
+monitor and latency tracker.
 Stage 4 will add caching, priority queueing and metrics.
 """
 
@@ -13,8 +15,12 @@ import time
 import uuid
 
 from app.config import Settings
-from app.core.exceptions import BudgetExceededError, ModelNotFoundError, NoAvailableProviderError
-from app.providers.base import ModelInfo, ProviderAdapter
+from app.core.exceptions import (
+    BudgetExceededError,
+    NoAvailableProviderError,
+    ProviderError,
+)
+from app.core.logging import get_logger
 from app.providers.registry import ProviderRegistry
 from app.schemas.chat import (
     ChatCompletionRequest,
@@ -27,6 +33,11 @@ from app.schemas.chat import (
 from app.services.cost.budgets import BudgetManager
 from app.services.cost.pricing import PricingDatabase
 from app.services.cost.tracker import CostTracker
+from app.services.routing.health import HealthMonitor
+from app.services.routing.latency import LatencyTracker
+from app.services.routing.router import RoutingEngine
+
+logger = get_logger(__name__)
 
 
 class ChatGateway:
@@ -38,27 +49,80 @@ class ChatGateway:
         pricing: PricingDatabase | None = None,
         tracker: CostTracker | None = None,
         budgets: BudgetManager | None = None,
+        router: RoutingEngine | None = None,
+        health: HealthMonitor | None = None,
+        latency: LatencyTracker | None = None,
     ) -> None:
         self.settings = settings
         self.registry = registry
         self.pricing = pricing
         self.tracker = tracker
         self.budgets = budgets
+        self.router = router
+        self.health = health
+        self.latency = latency
 
     # ------------------------------------------------------------- public API
     async def complete(self, request: ChatCompletionRequest, *, key_id: str = "anonymous") -> ChatCompletionResponse:
-        adapter, model = self._select_model(request)
+        if self.router is None:  # pragma: no cover - router is always wired since Stage 3
+            raise NoAvailableProviderError("Routing engine is not configured.")
+
+        plan = self.router.plan(request)
+        if not plan.candidates:
+            raise NoAvailableProviderError(
+                "No provider can serve this request right now.",
+                details={"strategy": plan.strategy, "excluded": plan.excluded},
+            )
         self._enforce_budgets()
 
-        started = time.perf_counter()
-        result = await adapter.complete(request, model)
-        latency_ms = round((time.perf_counter() - started) * 1000, 2)
+        max_fallbacks = (
+            request.max_fallbacks if request.max_fallbacks is not None else self.settings.max_fallbacks
+        )
+        max_attempts = 1 + max_fallbacks
 
+        attempted: list[str] = []
+        last_error: ProviderError | None = None
+        result = None
+        chosen_index = 0
+        started = time.perf_counter()
+
+        for index, candidate in enumerate(plan.candidates[:max_attempts]):
+            attempted.append(candidate.model.id)
+            try:
+                call_started = time.perf_counter()
+                result = await candidate.adapter.complete(request, candidate.model)
+                call_latency_ms = round((time.perf_counter() - call_started) * 1000, 2)
+                if self.latency is not None:
+                    self.latency.record(candidate.model.id, call_latency_ms)
+                if self.health is not None:
+                    self.health.record_success(candidate.adapter.name)
+                chosen_index = index
+                break
+            except ProviderError as exc:
+                last_error = exc
+                if self.health is not None:
+                    self.health.record_failure(candidate.adapter.name, exc.message)
+                logger.warning(
+                    "route attempt %d/%d failed on %s (%s, retryable=%s): %s",
+                    index + 1,
+                    max_attempts,
+                    candidate.model.id,
+                    exc.error_type,
+                    exc.retryable,
+                    exc.message,
+                )
+
+        if result is None:
+            assert last_error is not None
+            raise last_error
+
+        latency_ms = round((time.perf_counter() - started) * 1000, 2)
+        chosen = plan.candidates[chosen_index]
         response = ChatCompletionResponse(
             id=f"chatcmpl-{uuid.uuid4().hex[:24]}",
             created=int(time.time()),
-            model=model.id,
-            provider=adapter.name,
+            model=chosen.model.id,
+            provider=chosen.adapter.name,
             choices=[
                 Choice(
                     index=0,
@@ -73,10 +137,11 @@ class ChatGateway:
             ),
             latency_ms=latency_ms,
             routing=RoutingInfo(
-                strategy="explicit",
-                candidates=[model.id],
+                strategy=plan.strategy,
+                candidates=[c.model.id for c in plan.candidates],
+                fallbacks_used=len(attempted) - 1,
                 mock=result.mock,
-                reason="Direct provider selection (intelligent routing arrives in Stage 3).",
+                reason=chosen.reason,
             ),
         )
         self._track_cost(request, key_id, response, result.prompt_tokens, result.completion_tokens, result.mock)
@@ -97,7 +162,7 @@ class ChatGateway:
 
     def _track_cost(
         self,
-        request: ChatCompletionRequest,
+        request: ChatCompletionRequest,  # noqa: ARG002 - reserved for per-request budget scopes
         key_id: str,
         response: ChatCompletionResponse,
         prompt_tokens: int,
@@ -124,23 +189,3 @@ class ChatGateway:
             )
             if self.budgets is not None:
                 self.budgets.check_and_alert()
-
-    # ----------------------------------------------------------------- helpers
-    def _select_model(self, request: ChatCompletionRequest) -> tuple[ProviderAdapter, ModelInfo]:
-        ref = request.model if request.model != "auto" else self.settings.default_model
-
-        if ref == "auto":
-            for adapter, model in self.registry.all_models():
-                if adapter.mode() != "unconfigured":
-                    return adapter, model
-            raise NoAvailableProviderError(
-                "No provider is available. Configure an API key or enable mock mode (MOCK_PROVIDERS=auto/always)."
-            )
-
-        matches = self.registry.resolve(ref)
-        if not matches:
-            raise ModelNotFoundError(f"Unknown model '{ref}'. GET /v1/models lists the catalog.")
-        for adapter, model in matches:
-            if adapter.mode() != "unconfigured":
-                return adapter, model
-        raise NoAvailableProviderError(f"Model '{ref}' is unavailable: its provider is not configured.")
