@@ -78,3 +78,33 @@ class ChatCompletionResponse(BaseModel):
     cached: bool = False
     cost: CostInfo | None = None       # populated by Stage 2
     routing: RoutingInfo | None = None  # populated by Stage 3
+
+
+# ------------------------------------------------------- Stage 4: comparison
+class CompareRequest(BaseModel):
+    """Fan the same prompt out to several models in parallel."""
+
+    messages: list[Message] = Field(min_length=1)
+    models: list[str] = Field(
+        default_factory=list,
+        description="Models to compare. Empty = the flagship model of each configured provider.",
+    )
+    temperature: float = Field(default=0.7, ge=0.0, le=2.0)
+    max_tokens: int | None = Field(default=None, gt=0)
+
+
+class CompareResultItem(BaseModel):
+    model: str
+    provider: str
+    ok: bool
+    content: str | None = None
+    latency_ms: float
+    usage: Usage | None = None
+    cost: CostInfo | None = None
+    error: str | None = None
+
+
+class CompareResponse(BaseModel):
+    results: list[CompareResultItem]
+    fastest: str | None = None
+    cheapest: str | None = None

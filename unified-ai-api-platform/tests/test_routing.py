@@ -113,7 +113,8 @@ def test_failover_chain_and_circuit_breaker(env, monkeypatch):
     monkeypatch.setattr(GeminiProvider, "complete", broken_complete)
 
     # gemini owns the two cheapest candidates; both fail -> fail over to openai.
-    resp = _chat(client, strategy="cost", max_fallbacks=5)
+    # cache=False guarantees each call really executes the failover chain.
+    resp = _chat(client, strategy="cost", max_fallbacks=5, cache=False)
     assert resp.status_code == 200
     data = resp.json()
     assert data["provider"] == "openai"
@@ -121,7 +122,7 @@ def test_failover_chain_and_circuit_breaker(env, monkeypatch):
     assert data["routing"]["fallbacks_used"] == 2
 
     # Second call burns more failures -> circuit breaker opens (threshold = 3).
-    resp = _chat(client, strategy="cost", max_fallbacks=5)
+    resp = _chat(client, strategy="cost", max_fallbacks=5, cache=False)
     assert resp.status_code == 200
 
     health = client.get("/v1/routing/health").json()["providers"]
@@ -136,7 +137,7 @@ def test_failover_chain_and_circuit_breaker(env, monkeypatch):
     assert not any(c["provider"] == "gemini" for c in plan["candidates"])
     assert any("circuit" in e["reason"] for e in plan["excluded"] if e["model"].startswith("gemini/"))
 
-    resp = _chat(client, strategy="cost")
+    resp = _chat(client, strategy="cost", cache=False)
     assert resp.status_code == 200
     assert resp.json()["routing"]["fallbacks_used"] == 0
     assert resp.json()["provider"] == "openai"

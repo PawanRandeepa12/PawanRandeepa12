@@ -34,7 +34,7 @@ class PricingDatabase:
         self.currency = currency
 
     @classmethod
-    def load(cls, path: Path) -> "PricingDatabase":
+    def load(cls, path: Path) -> PricingDatabase:
         file_prices: dict[str, ModelPricing] = {}
         default = ModelPricing(0.001, 0.003, "default")
         currency = "USD"

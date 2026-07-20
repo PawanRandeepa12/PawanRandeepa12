@@ -14,17 +14,21 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from app import __version__
-from app.api.routes import chat, cost, health, models, routing
+from app.api.routes import admin, chat, cost, health, models, routing
 from app.config import Settings, get_settings
 from app.core.exceptions import register_exception_handlers
 from app.core.logging import get_logger, setup_logging
-from app.core.middleware import RequestIDMiddleware
+from app.core.middleware import MetricsMiddleware, RequestIDMiddleware
 from app.providers.registry import ProviderRegistry
 from app.services.cost.analytics import CostAnalytics
 from app.services.cost.budgets import BudgetManager
 from app.services.cost.pricing import PricingDatabase
 from app.services.cost.tracker import CostTracker
 from app.services.gateway import ChatGateway
+from app.services.performance.cache import build_cache
+from app.services.performance.metrics import MetricsRegistry
+from app.services.performance.queue import PriorityExecutor
+from app.services.performance.rate_limit import RateLimiter
 from app.services.routing.health import HealthMonitor
 from app.services.routing.latency import LatencyTracker
 from app.services.routing.router import RoutingEngine
@@ -63,6 +67,22 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         app.state.latency = latency_tracker
         app.state.health_monitor = health_monitor
         app.state.router_engine = router_engine
+
+        # --- Stage 4: speed & performance --------------------------------------
+        cache = await build_cache(settings)
+        rate_limiter = (
+            RateLimiter(settings.rate_limit_requests_per_minute, settings.rate_limit_burst)
+            if settings.rate_limit_enabled
+            else None
+        )
+        executor = PriorityExecutor(settings.queue_max_concurrency)
+        await executor.start()
+        metrics = MetricsRegistry() if settings.metrics_enabled else None
+        app.state.cache = cache
+        app.state.rate_limiter = rate_limiter
+        app.state.executor = executor
+        app.state.metrics = metrics
+
         app.state.gateway = ChatGateway(
             settings,
             registry,
@@ -72,13 +92,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             router=router_engine,
             health=health_monitor,
             latency=latency_tracker,
+            cache=cache,
+            executor=executor,
+            metrics=metrics,
         )
-
-        # --- Later stages (wired in by Stage 4) --------------------------------
-        app.state.cache = None            # Stage 4: ResponseCache
-        app.state.rate_limiter = None     # Stage 4: RateLimiter
-        app.state.executor = None         # Stage 4: PriorityExecutor
-        app.state.metrics = None          # Stage 4: MetricsRegistry
 
         logger.info(
             "platform started (env=%s, mock_providers=%s)",
@@ -89,6 +106,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             yield
         finally:
             await app.state.health_monitor.stop()
+            await app.state.executor.stop()
+            if hasattr(app.state.cache, "aclose"):
+                await app.state.cache.aclose()
             await registry.aclose()
             logger.info("platform stopped")
 
@@ -106,12 +126,15 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     register_exception_handlers(app)
     app.add_middleware(RequestIDMiddleware)
+    app.add_middleware(MetricsMiddleware)
 
     app.include_router(health.router)
     app.include_router(models.router)
     app.include_router(chat.router)
     app.include_router(cost.router)
     app.include_router(routing.router)
+    app.include_router(admin.router)
+    app.include_router(admin.metrics_router)
 
     @app.get("/", include_in_schema=False)
     async def root() -> dict:
@@ -127,10 +150,11 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                 or getattr(app.state, "executor", None) is not None,
             },
             "endpoints": {
-                "chat": "POST /v1/chat/completions",
+                "chat": "POST /v1/chat/completions, POST /v1/chat/compare",
                 "models": "GET /v1/models",
                 "cost": "POST /v1/cost/estimate, POST /v1/cost/compare, GET /v1/cost/summary, GET /v1/cost/budgets",
                 "routing": "POST /v1/routing/route, GET /v1/routing/health, GET /v1/routing/latency",
+                "admin": "GET /v1/admin/stats, GET /v1/admin/cache/stats, GET /v1/admin/queue, GET /metrics",
                 "health": "GET /health, GET /ready",
             },
         }

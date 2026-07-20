@@ -37,7 +37,7 @@ class TestEnv:
         self.app = create_app(settings)
         self.client = TestClient(self.app)
 
-    def __enter__(self) -> "TestEnv":
+    def __enter__(self) -> TestEnv:
         self.client.__enter__()
         return self
 

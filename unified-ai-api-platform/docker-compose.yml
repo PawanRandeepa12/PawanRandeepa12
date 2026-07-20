@@ -1,5 +1,5 @@
-# Stage 1 composition: the API service on its own.
-# Stage 4 extends this file with Redis for the shared cache layer.
+# Full platform composition: API + Redis (Stage 4 cache backend).
+# The app transparently falls back to the in-memory cache if Redis is absent.
 services:
   app:
     build: .
@@ -9,6 +9,28 @@ services:
       - "8000:8000"
     env_file:
       - .env
+    environment:
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
     volumes:
       - ./data:/srv/app/data
+    depends_on:
+      redis:
+        condition: service_healthy
     restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: unified-ai-redis
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+volumes:
+  redis-data:

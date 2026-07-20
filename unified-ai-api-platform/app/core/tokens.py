@@ -20,7 +20,7 @@ def estimate_tokens(text: str | None) -> int:
     return max(1, (len(text) + 3) // 4)
 
 
-def estimate_messages_tokens(messages: list["Message"]) -> int:
+def estimate_messages_tokens(messages: list[Message]) -> int:
     total = 3  # chat framing overhead
     for message in messages:
         total += 3 + estimate_tokens(message.content)

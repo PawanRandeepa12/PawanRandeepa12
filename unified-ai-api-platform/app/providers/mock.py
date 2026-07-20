@@ -18,7 +18,7 @@ if TYPE_CHECKING:  # pragma: no cover
     from app.schemas.chat import ChatCompletionRequest
 
 
-def mock_completion(request: "ChatCompletionRequest", model: "ModelInfo") -> "ProviderResult":
+def mock_completion(request: ChatCompletionRequest, model: ModelInfo) -> ProviderResult:
     from app.providers.base import ProviderResult
 
     last_user = next((m for m in reversed(request.messages) if m.role == "user"), request.messages[-1])

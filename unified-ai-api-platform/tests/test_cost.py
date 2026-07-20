@@ -13,11 +13,10 @@ MESSAGES = [{"role": "user", "content": "Summarize the benefits of a unified AI 
 MESSAGE_OBJS = [Message(role=m["role"], content=m["content"]) for m in MESSAGES]
 
 
-def _chat(client):
-    return client.post(
-        "/v1/chat/completions",
-        json={"model": "openai/gpt-4o-mini", "messages": MESSAGES},
-    )
+def _chat(client, **overrides):
+    body = {"model": "openai/gpt-4o-mini", "messages": MESSAGES}
+    body.update(overrides)
+    return client.post("/v1/chat/completions", json=body)
 
 
 # ------------------------------------------------------------------- estimates
@@ -139,7 +138,7 @@ def test_budget_lifecycle_with_alerts_and_blocking(env):
     budget_id = resp.json()["id"]
     assert resp.json()["exceeded"] is False
 
-    assert _chat(client).status_code == 200  # first call allowed (spend was 0)
+    assert _chat(client, cache=False).status_code == 200  # first call allowed (spend was 0)
 
     status = (client.get("/v1/cost/budgets").json()["budgets"])
     budget = next(b for b in status if b["id"] == budget_id)
@@ -150,13 +149,14 @@ def test_budget_lifecycle_with_alerts_and_blocking(env):
     budget_alerts = [a for a in alerts if a["budget_id"] == budget_id]
     assert {a["threshold"] for a in budget_alerts} == {0.5, 1.0}
 
-    # Now blocked: the global budget is exhausted.
-    resp = _chat(client)
+    # Now blocked: the global budget is exhausted (cache=False forces a new
+    # provider call — cached replies stay free by design).
+    resp = _chat(client, cache=False)
     assert resp.status_code == 429
     assert resp.json()["error"]["type"] == "budget_exceeded"
 
     assert client.delete(f"/v1/cost/budgets/{budget_id}").status_code == 200
-    assert _chat(client).status_code == 200  # unblocked again
+    assert _chat(client, cache=False).status_code == 200  # unblocked again
 
 
 def test_budget_validation(client):
