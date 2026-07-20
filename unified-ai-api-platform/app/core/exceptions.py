@@ -40,6 +40,16 @@ class AuthorizationError(PlatformError):
     error_type = "authorization_error"
 
 
+class BadRequestError(PlatformError):
+    status_code = 400
+    error_type = "bad_request"
+
+
+class NotFoundError(PlatformError):
+    status_code = 404
+    error_type = "not_found"
+
+
 class ModelNotFoundError(PlatformError):
     status_code = 404
     error_type = "model_not_found"
