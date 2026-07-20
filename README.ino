@@ -1,3 +1,59 @@
+/*
+
+==========================================
+
+README.ino
+
+Author: Pawan Jayarathna
+
+Country: Sri Lanka
+
+Age: 21
+
+Field: Computer Science Student
+
+
+
+About Me:
+
+- Passionate about programming and AI.
+
+- Interested in robotics, software engineering, and entrepreneurship.
+
+- Goal: Build world-class software products and AI companies.
+
+
+
+Skills:
+
+- C Programming
+
+- Python
+
+- HTML, CSS, JavaScript
+
+- Arduino
+
+- Basic AI & Machine Learning
+
+
+
+Current Projects:
+
+- Arduino robotics
+
+- AI applications
+
+- University programming assignments
+
+
+
+Version: 1.0
+
+==========================================
+
+*/
+
 #define IR1 A0
 #define IR2 A1
 #define IR3 A2

@@ -4,6 +4,15 @@ An Arduino-based line-following robot utilizing a **Proportional-Derivative (PD)
 
 ---
 
+## 👤 Author
+
+- **Name**: Pawan Jayarathna
+- **Country**: Sri Lanka
+- **Field**: Computer Science Student
+- **Interests**: Robotics, Software Engineering, AI & Machine Learning, Entrepreneurship
+
+---
+
 ## 🚀 Features
 
 - **PID Control System**: Implements proportional and derivative tuning for responsive steering adjustments along curves and straight paths.
