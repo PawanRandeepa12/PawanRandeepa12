@@ -1,0 +1,14 @@
+# Stage 1 composition: the API service on its own.
+# Stage 4 extends this file with Redis for the shared cache layer.
+services:
+  app:
+    build: .
+    image: unified-ai-api-platform:latest
+    container_name: unified-ai-api
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    volumes:
+      - ./data:/srv/app/data
+    restart: unless-stopped
