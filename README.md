@@ -1,107 +1,168 @@
-# Pawan Randeepa AI Lab — Academic README
+<div align="center">
 
-Authors
--------
-Pawan Randeepa
+# Pawan Jayarathna
 
-Abstract
---------
-This repository collects research prototypes, reproducible experiments, and engineering artifacts developed at the Pawan Randeepa AI Lab. The primary intent is to provide open, well-documented implementations that enable reproducible evaluation of methods, transparent reporting of experimental protocols, and templates for deploying reproducible ML systems.
+**Computer Science Student · Software Engineer · AI & Robotics Enthusiast**  
+🇱🇰 Colombo, Sri Lanka
 
-Repository scope
-----------------
-Included materials:
-- Research experiments (model definitions, training and evaluation code)
-- Dataset manifests and preprocessing pipelines
-- Reproducibility scripts and seed manifests
-- Evaluation harnesses for metrics and statistical analysis
-- Deployment examples and CI for reproducible runs
+[![Java](https://img.shields.io/badge/Java-11-orange?logo=openjdk)](https://openjdk.org/)
+[![MSSQL](https://img.shields.io/badge/MSSQL-SQL_Server-blue?logo=microsoftsqlserver)](https://www.microsoft.com/sql-server)
+[![Swing](https://img.shields.io/badge/GUI-Swing-red?logo=java)](https://docs.oracle.com/javase/tutorial/uiswing/)
+[![Arduino](https://img.shields.io/badge/Embedded-Arduino-teal?logo=arduino)](https://arduino.cc/)
 
-Guiding principles
-------------------
-- Reproducibility: provide deterministic experiment seeds, dataset manifests, and exact dependency specifications.
-- Transparency: document data sources, preprocessing, hyperparameters, and evaluation protocols.
-- Rigor: include baseline comparisons and simple ablations where relevant.
-- Ethics: document limitations, potential biases, and intended use cases.
+</div>
 
-Structure
----------
-- /experiments — self-contained experiments with README, requirements, and run scripts
-- /data — dataset manifests, preprocessing pipelines, and hashes where permissible
-- /notebooks — reproducible analysis and visualization notebooks
-- /deploy — example deployment manifests (Docker, k8s, or serverless)
-- /scripts — helper utilities for data, training, evaluation, and reproducibility
-- /docs — extended documentation, methods descriptions, and evaluation protocols
+---
 
-Reproducibility checklist
--------------------------
-For each experiment we aim to include the following:
-1. Description: clear problem statement and research question
-2. Data: dataset source, version, license, and manifest
-3. Preprocessing: exact preprocessing steps and code
-4. Model: architecture, hyperparameters, and initialization seeds
-5. Training: training script, training schedule, and compute footprint
-6. Evaluation: metrics, test set splits, statistical tests, and baseline comparisons
-7. Checkpoints: links to model artifacts or instructions to reproduce
-8. Environment: dependency list (requirements.txt or pyproject.toml) and Dockerfile
-9. Random seeds and deterministic flags used in experiments
-10. License and ethical considerations
+## 📋 Profile Overview
 
-How to reproduce an experiment (example)
-----------------------------------------
-1. Clone the repository:
-   git clone https://github.com/PawanRandeepa12/PawanRandeepa12.git
-2. Navigate to an experiment folder, e.g., experiments/example-exp
-3. Create and activate a virtual environment and install dependencies:
-   python -m venv .venv && source .venv/bin/activate
-   pip install -r requirements.txt
-4. Verify dataset manifests and obtain data per the instructions in data/ or experiment README
-5. Run training with fixed seeds:
-   python train.py --config configs/experiment.yaml --seed 42
-6. Run evaluation and statistical analysis:
-   python evaluate.py --checkpoint checkpoints/best.pt --metrics all
+A dedicated CS student focused on building **world-class software products** that bridge intelligent algorithms with real-world hardware. Experienced in full-stack Java desktop development with MSSQL backends, embedded Arduino systems, and practical AI/ML applications.
 
-Reporting and citation
-----------------------
-If you use code or experiments from this repository in your research, please cite the repository. A suggested citation format (BibTeX) is provided below. Replace placeholders as appropriate.
+---
 
-@misc{randeepa2026pawanlab,
-  title = {Pawan Randeepa AI Lab: Reproducible Experiments and Reference Implementations},
-  author = {Pawan Randeepa},
-  year = {2026},
-  howpublished = {\url{https://github.com/PawanRandeepa12/PawanRandeepa12}}
-}
+## 💼 Professional Profile
 
-Evaluation protocols and statistical tests
------------------------------------------
-- Report mean and standard deviation across N independent runs (N ≥ 3) where practical.
-- Use appropriate statistical tests (e.g., paired t-test, Wilcoxon signed-rank) and report p-values and effect sizes.
-- Where applicable, include confidence intervals and bootstrap estimates for metrics.
+| Field | Details |
+|---|---|
+| **Name** | Pawan Jayarathna |
+| **Location** | Colombo, Western Province, Sri Lanka |
+| **Education** | Computer Science Student |
+| **Focus** | Software Engineering · AI/ML · Robotics · Entrepreneurship |
+| **Availability** | Open to collaborations, internships, and startup opportunities |
 
-Ethics and data governance
---------------------------
-- Document data provenance and any known limitations or biases in data sources.
-- Avoid sharing personally identifiable information (PII). If PII is necessary for reproducibility, provide synthetic or redacted variants and a clear data use agreement.
-- Include human-in-the-loop safety checks for deployed demos and rate-limiting for public endpoints.
+---
 
-Contributing
-------------
-Contributions are welcome. For research contributions, follow the steps below:
-1. Open an issue describing the proposed experiment or correction.
-2. Create a feature branch and add reproducible experiment artifacts and documentation.
-3. Add tests where appropriate and include clear instructions to reproduce results.
-4. Submit a pull request referencing the related issue.
+## 🗂 Repository Structure
 
-License
--------
-This repository is released under the MIT License. See LICENSE for details.
+```
+PawanRandeepa12/
+├── README.md                           # Professional portfolio (this file)
+└── projects/
+    ├── courier-management/              # MSSQL Courier System (Java + Swing)
+    │   ├── pom.xml
+    │   └── src/main/java/...
+    └── arduino-robotics/                 # Embedded robotics (Arduino)
+        └── README.ino
+```
 
-Contact
--------
-Author: Pawan Randeepa
-Location: Negombo → Colombo
-Email: (add your email)
+---
 
-Acknowledgements
-----------------
-This work benefits from open-source libraries and community contributions. If particular external datasets, libraries, or collaborators were significant to a subproject, list them in the relevant experiment README.
+## 🚀 Featured Projects
+
+### 📦 Courier Management System
+**Path:** [`projects/courier-management/`](projects/courier-management/)
+
+> A production-grade desktop application built with Java 11, Swing GUI, and MSSQL database for end-to-end courier logistics.
+
+| Capability | Implementation |
+|---|---|
+| **Database** | MSSQL (`mssql-jdbc` 12.4.2) with relational schema (customers, packages, shipments, payments, tracking) |
+| **Architecture** | Abstract model classes (`Person`, `Employee`, `Package`, `Payment`) + concrete implementations |
+| **GUI** | 8-tab Swing interface: Dashboard, Customers, Packages, Shipments, Tracking, Payments, Agents, Reports |
+| **Features** | Real-time shipment tracking, agent/admin roles, package cost calculations (Standard/Fragile/Bulk), payment processing |
+| **Build** | Maven (`maven-assembly-plugin` fat JAR) |
+
+**Key Files:**
+- `gui/CourierApp.java` — Main Swing application
+- `database/DBConnection.java` — MSSQL connection manager
+- `dao/*` — Full DAO layer (Customer, Package, Shipment, Tracking, Payment, Employee)
+- `model/*` — Complete domain model with inheritance
+
+---
+
+### 🤖 Arduino Robotics
+**Path:** [`projects/arduino-robotics/`](projects/arduino-robotics/)
+
+> Embedded robotics platform using Arduino microcontrollers, IR sensors, and dual DC motor drivers.
+
+- **Hardware:** Arduino Uno, IR sensors (`A0`–`A3`), L298N-style motor control (`D2`–`D9`)
+- **Features:** Variable speed motor control (`MAX_SPEED 150`), real-time sensor weighting, autonomous navigation logic
+- **File:** `README.ino`
+
+---
+
+## 🛠 Technical Stack
+
+### Languages & Frameworks
+- **Java** — Desktop applications, OOP architecture, Swing GUI
+- **C** — Systems programming fundamentals
+- **Python** — AI/ML prototyping, automation
+- **JavaScript / HTML / CSS** — Web frontend basics
+
+### Database & Backend
+- **MSSQL (SQL Server)** — Schema design, relational modeling, JDBC connectivity
+- **JDBC** — `mssql-jdbc` driver integration
+- **Maven** — Dependency management, assembly builds
+
+### Hardware & IoT
+- **Arduino** — Microcontroller programming
+- **Robotics** — Sensor integration, motor drivers, embedded logic
+- **Embedded C / `.ino`** — Real-time hardware control
+
+### AI & Machine Learning
+- Basic algorithms and data analysis
+- Experimental AI applications
+- Neural network exploration
+
+---
+
+## 🎯 Professional Goals
+
+| Priority | Goal | Status |
+|---|---|---|
+| 1 | Complete full-stack desktop + database integration | ✅ Done |
+| 2 | Build a production AI/ML product | 🔄 In Progress |
+| 3 | Launch an innovative robotics application | 📋 Planned |
+| 4 | Found / join a tech startup | 🎯 Long-term |
+| 5 | Become a thought leader in AI & entrepreneurship | 🚀 Vision |
+
+---
+
+## 📊 Current Focus Areas
+
+- 🤖 **Advanced Arduino Robotics** — Sensor fusion, autonomous navigation
+- 🧠 **Practical AI/ML** — Applying algorithms to real-world logistics and automation
+- 💻 **Software Architecture** — Clean code, design patterns, maintainable systems
+- 🚀 **Entrepreneurship** — Building products that create measurable impact
+
+---
+
+## 📚 Learning Path
+
+```
+✅ C Foundation  →  ✅ Python / AI  →  ✅ Web Tech  →  ✅ Arduino / IoT
+     ↓
+✅ Java / Swing / MSSQL  →  🔄 Advanced AI / System Architecture  →  📚 Cloud / DevOps
+```
+
+---
+
+## 🤝 Collaboration & Contact
+
+I'm actively seeking:
+- Software engineering collaborations on AI, robotics, or logistics systems
+- Mentorship and peer review in Java architecture and database design
+- Startup co-founding or internship opportunities in tech
+
+**Connect:** Open to discussions about technology, innovation, and entrepreneurship.
+
+---
+
+## 💡 Philosophy
+
+> "The future belongs to those who can combine creativity with code. I'm on a mission to build products that matter."
+
+---
+
+## 🌟 Why This Profile?
+
+- 🔬 **Experimental AI & Robotics** — Projects that bridge software and hardware
+- 💡 **Student Journey Documented** — From fundamentals to production-grade applications
+- 🚀 **Product Evolution** — See concepts grow from `.ino` sketches to full Swing + MSSQL systems
+- 🌍 **Global Ambition** — Building from Sri Lanka with worldwide impact in mind
+
+---
+
+**Let's build something amazing together.** 🚀
+
+*Updated: August 2026*
