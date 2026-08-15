@@ -1,81 +1,150 @@
-# 👋 Hello, I'm Pawan Jayarathna
+<div align="center">
 
-Welcome to my GitHub profile! I'm a 21-year-old Computer Science student from Sri Lanka, passionate about building innovative software products and AI-driven solutions.
+# Pawan Jayarathna
+
+**Computer Science Student · Software Engineer · AI & Robotics Enthusiast**  
+🇱🇰 Negombo, Sri Lanka
+
+[![Java](https://img.shields.io/badge/Java-11-orange?logo=openjdk)](https://openjdk.org/)
+[![MSSQL](https://img.shields.io/badge/MSSQL-SQL_Server-blue?logo=microsoftsqlserver)](https://www.microsoft.com/sql-server)
+[![Swing](https://img.shields.io/badge/GUI-Swing-red?logo=java)](https://docs.oracle.com/javase/tutorial/uiswing/)
+[![Arduino](https://img.shields.io/badge/Embedded-Arduino-teal?logo=arduino)](https://arduino.cc/)
+
+</div>
 
 ---
 
-## 🚀 About Me
+## 📋 Profile Overview
 
-I'm a dedicated Computer Science student with a deep passion for **programming**, **artificial intelligence**, and **robotics**. I thrive on solving complex problems and exploring the intersection of hardware and software. My ultimate goal is to build **world-class software products** and **AI companies** that make a meaningful impact on the world.
-
-When I'm not coding, I'm diving into robotics projects, exploring new AI applications, or brainstorming entrepreneurial ideas! 🤖
+A dedicated CS student focused on building **world-class software products** that bridge intelligent algorithms with real-world hardware. Experienced in full-stack Java desktop development with MSSQL backends, embedded Arduino systems, and practical AI/ML applications.
 
 ---
 
 ## 💼 Professional Profile
 
-- **Location:** 🇱🇰 Sri Lanka
-- **Education:** Computer Science Student
-- **Age:** 21
-- **Passion Areas:** AI & Machine Learning, Robotics, Software Engineering, Entrepreneurship
+| Field | Details |
+|---|---|
+| **Name** | Pawan Jayarathna |
+| **Location** | Negombo, Western Province, Sri Lanka |
+| **Education** | Computer Science Student |
+| **Focus** | Software Engineering · AI/ML · Robotics · Entrepreneurship |
+| **Availability** | Open to collaborations, internships, and startup opportunities |
 
 ---
 
-## 🛠️ Skills & Technologies
+## 🗂 Repository Structure
 
-### Programming Languages
-- **C** - Strong foundation in systems programming
-- **Python** - AI, automation, and general-purpose programming
-- **JavaScript** - Web development and interactive applications
-- **HTML & CSS** - Web design and frontend development
+```
+PawanRandeepa12/
+├── README.md                           # Professional portfolio (this file)
+└── projects/
+    ├── courier-management/              # MSSQL Courier System (Java + Swing)
+    │   ├── pom.xml
+    │   └── src/main/java/...
+    └── arduino-robotics/                 # Embedded robotics (Arduino)
+        └── README.ino
+```
+
+---
+
+## 🚀 Featured Projects
+
+### 📦 Courier Management System
+**Path:** [`projects/courier-management/`](projects/courier-management/)
+
+> A production-grade desktop application built with Java 11, Swing GUI, and MSSQL database for end-to-end courier logistics.
+
+| Capability | Implementation |
+|---|---|
+| **Database** | MSSQL (`mssql-jdbc` 12.4.2) with relational schema (customers, packages, shipments, payments, tracking) |
+| **Architecture** | Abstract model classes (`Person`, `Employee`, `Package`, `Payment`) + concrete implementations |
+| **GUI** | 8-tab Swing interface: Dashboard, Customers, Packages, Shipments, Tracking, Payments, Agents, Reports |
+| **Features** | Real-time shipment tracking, agent/admin roles, package cost calculations (Standard/Fragile/Bulk), payment processing |
+| **Build** | Maven (`maven-assembly-plugin` fat JAR) |
+
+**Key Files:**
+- `gui/CourierApp.java` — Main Swing application
+- `database/DBConnection.java` — MSSQL connection manager
+- `dao/*` — Full DAO layer (Customer, Package, Shipment, Tracking, Payment, Employee)
+- `model/*` — Complete domain model with inheritance
+
+---
+
+### 🤖 Arduino Robotics
+**Path:** [`projects/arduino-robotics/`](projects/arduino-robotics/)
+
+> Embedded robotics platform using Arduino microcontrollers, IR sensors, and dual DC motor drivers.
+
+- **Hardware:** Arduino Uno, IR sensors (`A0`–`A3`), L298N-style motor control (`D2`–`D9`)
+- **Features:** Variable speed motor control (`MAX_SPEED 150`), real-time sensor weighting, autonomous navigation logic
+- **File:** `README.ino`
+
+---
+
+## 🛠 Technical Stack
+
+### Languages & Frameworks
+- **Java** — Desktop applications, OOP architecture, Swing GUI
+- **C** — Systems programming fundamentals
+- **Python** — AI/ML prototyping, automation
+- **JavaScript / HTML / CSS** — Web frontend basics
+
+### Database & Backend
+- **MSSQL (SQL Server)** — Schema design, relational modeling, JDBC connectivity
+- **JDBC** — `mssql-jdbc` driver integration
+- **Maven** — Dependency management, assembly builds
 
 ### Hardware & IoT
-- **Arduino** - Microcontroller programming and embedded systems
-- **Robotics** - Designing and building intelligent robotic systems
+- **Arduino** — Microcontroller programming
+- **Robotics** — Sensor integration, motor drivers, embedded logic
+- **Embedded C / `.ino`** — Real-time hardware control
 
 ### AI & Machine Learning
-- Basic ML algorithms and concepts
-- AI application development
-- Data analysis fundamentals
+- Basic algorithms and data analysis
+- Experimental AI applications
+- Neural network exploration
 
 ---
 
-## 📂 Featured Projects
+## 🎯 Professional Goals
 
-### Arduino Robotics
-**Intelligent robotic systems powered by Arduino microcontrollers**
-- Hands-on learning with embedded systems
-- Real-world IoT applications
-- Problem-solving through hardware-software integration
-
-### AI Applications
-**Exploring machine learning and AI solutions**
-- Building intelligent algorithms
-- Data-driven applications
-- Experimenting with neural networks and automation
-
-### University Programming Assignments
-**Academic projects showcasing core CS concepts**
-- Algorithm design and implementation
-- Software architecture
-- Full-stack problem solving
+| Priority | Goal | Status |
+|---|---|---|
+| 1 | Complete full-stack desktop + database integration | ✅ Done |
+| 2 | Build a production AI/ML product | 🔄 In Progress |
+| 3 | Launch an innovative robotics application | 📋 Planned |
+| 4 | Found / join a tech startup | 🎯 Long-term |
+| 5 | Become a thought leader in AI & entrepreneurship | 🚀 Vision |
 
 ---
 
-## 🎯 Current Focus
+## 📊 Current Focus Areas
 
-- 🤖 Building advanced Arduino robotics projects
-- 🧠 Developing practical AI and Machine Learning applications
-- 💻 Strengthening software engineering fundamentals
-- 🚀 Exploring entrepreneurial opportunities in AI/tech
+- 🤖 **Advanced Arduino Robotics** — Sensor fusion, autonomous navigation
+- 🧠 **Practical AI/ML** — Applying algorithms to real-world logistics and automation
+- 💻 **Software Architecture** — Clean code, design patterns, maintainable systems
+- 🚀 **Entrepreneurship** — Building products that create measurable impact
 
 ---
 
-## 📊 GitHub Activity
+## 📚 Learning Path
 
 ```
-🔨 Building | 🧠 Learning | 🚀 Creating
+✅ C Foundation  →  ✅ Python / AI  →  ✅ Web Tech  →  ✅ Arduino / IoT
+     ↓
+✅ Java / Swing / MSSQL  →  🔄 Advanced AI / System Architecture  →  📚 Cloud / DevOps
 ```
+
+---
+
+## 🤝 Collaboration & Contact
+
+I'm actively seeking:
+- Software engineering collaborations on AI, robotics, or logistics systems
+- Mentorship and peer review in Java architecture and database design
+- Startup co-founding or internship opportunities in tech
+
+**Connect:** Open to discussions about technology, innovation, and entrepreneurship.
 
 ---
 
@@ -85,54 +154,15 @@ When I'm not coding, I'm diving into robotics projects, exploring new AI applica
 
 ---
 
-## 🎓 Learning Path
+## 🌟 Why This Profile?
 
-- ✅ C Programming Foundation
-- ✅ Python for AI/ML
-- ✅ Web Technologies (HTML, CSS, JavaScript)
-- ✅ Arduino & Embedded Systems
-- 🔄 **Currently:** Advanced AI/ML concepts
-- 📚 **Next:** Cloud computing, DevOps, Advanced Web Frameworks
+- 🔬 **Experimental AI & Robotics** — Projects that bridge software and hardware
+- 💡 **Student Journey Documented** — From fundamentals to production-grade applications
+- 🚀 **Product Evolution** — See concepts grow from `.ino` sketches to full Swing + MSSQL systems
+- 🌍 **Global Ambition** — Building from Sri Lanka with worldwide impact in mind
 
 ---
 
-## 🤝 Let's Connect
+**Let's build something amazing together.** 🚀
 
-- 💼 Open to collaborations on AI, robotics, and innovative projects
-- 📧 Reach out if you want to discuss technology, startups, or coding!
-- 🌐 Always excited to learn from and work with like-minded developers
-
----
-
-## 🎯 Long-term Goals
-
-- [ ] Contribute to impactful open-source AI projects
-- [ ] Build a full-stack AI product
-- [ ] Create innovative robotics applications
-- [ ] Launch a tech startup
-- [ ] Become a thought leader in AI & entrepreneurship
-
----
-
-## ⭐ Why Follow My Profile?
-
-- 🔬 Explore experimental AI and robotics projects
-- 💡 Learn from a computer science student's journey
-- 🚀 Be part of building the future with innovative tech
-- 🤖 See the evolution from concept to production
-
----
-
-## 🌟 Fun Facts
-
-- 🤖 I believe robotics is the future of problem-solving
-- 🧠 AI and machine learning fascinate me endlessly
-- 💼 Entrepreneurship is not just a buzzword for me—it's a passion
-- 🎯 I'm driven by the idea of creating products that positively impact society
-- 🌍 Based in Sri Lanka, with global ambitions
-
----
-
-**Let's build something amazing together! 🚀**
-
-*Last updated: July 2026*
+*Updated: August 2026*
