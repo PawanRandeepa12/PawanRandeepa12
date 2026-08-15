@@ -6,9 +6,40 @@ Welcome to my GitHub profile! I'm a 21-year-old Computer Science student from Sr
 
 ## 🚀 About Me
 
-I'm a dedicated Computer Science student with a deep passion for **programming**, **artificial intelligence**, and **robotics**. I thrive on solving complex problems and exploring the intersection of hardware and software. My ultimate goal is to build **world-class software products** and **AI companies** that make a meaningful impact on the world.
+Dedicated CS student with a deep passion for **programming**, **artificial intelligence**, and **robotics**. I thrive on solving complex problems and exploring the intersection of hardware and software. My ultimate goal is to build **world-class software products** and **AI companies**.
 
-When I'm not coding, I'm diving into robotics projects, exploring new AI applications, or brainstorming entrepreneurial ideas! 🤖
+---
+
+## 📂 Repository Organization
+
+This profile repository showcases my projects in a clean, organized structure:
+
+```
+PawanRandeepa12/
+├── README.md                    # This profile page
+├── projects/
+│   ├── courier-management/      # MSSQL-based Courier Management System (Java + Swing GUI)
+│   │   ├── pom.xml
+│   │   └── src/
+│   └── arduino-robotics/         # Arduino embedded systems / robotics
+│       └── README.ino
+```
+
+---
+
+## 🛠️ Featured Projects
+
+### 📦 Courier Management System (`projects/courier-management/`)
+A full-stack Java desktop application with MSSQL backend and Swing GUI for managing shipments, packages, tracking, payments, and delivery agents.
+
+- **Tech Stack:** Java 11, MSSQL (`mssql-jdbc`), Swing
+- **Features:** Customer/package/shipment management, tracking updates, payment processing, agent/admin roles, dashboard reports
+- **Entry Point:** `gui.CourierApp`
+
+### 🤖 Arduino Robotics (`projects/arduino-robotics/`)
+Embedded robotics projects using Arduino microcontrollers, IR sensors, and motor drivers.
+
+- **File:** `README.ino`
 
 ---
 
@@ -17,48 +48,19 @@ When I'm not coding, I'm diving into robotics projects, exploring new AI applica
 - **Location:** 🇱🇰 Sri Lanka
 - **Education:** Computer Science Student
 - **Age:** 21
-- **Passion Areas:** AI & Machine Learning, Robotics, Software Engineering, Entrepreneurship
+- **Passion Areas:** AI & ML, Robotics, Software Engineering, Entrepreneurship
 
 ---
 
 ## 🛠️ Skills & Technologies
 
-### Programming Languages
-- **C** - Strong foundation in systems programming
-- **Python** - AI, automation, and general-purpose programming
-- **JavaScript** - Web development and interactive applications
-- **HTML & CSS** - Web design and frontend development
-
-### Hardware & IoT
-- **Arduino** - Microcontroller programming and embedded systems
-- **Robotics** - Designing and building intelligent robotic systems
-
-### AI & Machine Learning
-- Basic ML algorithms and concepts
-- AI application development
-- Data analysis fundamentals
-
----
-
-## 📂 Featured Projects
-
-### Arduino Robotics
-**Intelligent robotic systems powered by Arduino microcontrollers**
-- Hands-on learning with embedded systems
-- Real-world IoT applications
-- Problem-solving through hardware-software integration
-
-### AI Applications
-**Exploring machine learning and AI solutions**
-- Building intelligent algorithms
-- Data-driven applications
-- Experimenting with neural networks and automation
-
-### University Programming Assignments
-**Academic projects showcasing core CS concepts**
-- Algorithm design and implementation
-- Software architecture
-- Full-stack problem solving
+| Area | Technologies |
+|---|---|
+| Programming | Java, C, Python, JavaScript |
+| Web / Frontend | HTML, CSS, JavaScript |
+| Database | MSSQL (SQL Server) |
+| Hardware / IoT | Arduino, Robotics, Embedded Systems |
+| AI / ML | Basic ML algorithms, data analysis |
 
 ---
 
@@ -91,22 +93,24 @@ When I'm not coding, I'm diving into robotics projects, exploring new AI applica
 - ✅ Python for AI/ML
 - ✅ Web Technologies (HTML, CSS, JavaScript)
 - ✅ Arduino & Embedded Systems
-- 🔄 **Currently:** Advanced AI/ML concepts
-- 📚 **Next:** Cloud computing, DevOps, Advanced Web Frameworks
+- ✅ Java / Desktop GUI Development
+- ✅ MSSQL Database Design
+- 🔄 **Currently:** Advanced AI/ML concepts, System Architecture
+- 📚 **Next:** Cloud computing, DevOps, Full-Stack Development
 
 ---
 
 ## 🤝 Let's Connect
 
-- 💼 Open to collaborations on AI, robotics, and innovative projects
+- 💼 Open to collaborations on AI, robotics, and innovative software projects
 - 📧 Reach out if you want to discuss technology, startups, or coding!
-- 🌐 Always excited to learn from and work with like-minded developers
+- 🌐 Always excited to learn from like-minded developers
 
 ---
 
 ## 🎯 Long-term Goals
 
-- [ ] Contribute to impactful open-source AI projects
+- [x] Complete a full-stack desktop application with database integration
 - [ ] Build a full-stack AI product
 - [ ] Create innovative robotics applications
 - [ ] Launch a tech startup
@@ -118,8 +122,8 @@ When I'm not coding, I'm diving into robotics projects, exploring new AI applica
 
 - 🔬 Explore experimental AI and robotics projects
 - 💡 Learn from a computer science student's journey
-- 🚀 Be part of building the future with innovative tech
-- 🤖 See the evolution from concept to production
+- 🚀 See evolution from concept to production
+- 🤖 Discover software that bridges hardware and intelligence
 
 ---
 
@@ -127,12 +131,12 @@ When I'm not coding, I'm diving into robotics projects, exploring new AI applica
 
 - 🤖 I believe robotics is the future of problem-solving
 - 🧠 AI and machine learning fascinate me endlessly
-- 💼 Entrepreneurship is not just a buzzword for me—it's a passion
-- 🎯 I'm driven by the idea of creating products that positively impact society
+- 💼 Entrepreneurship is not just a buzzword — it's a passion
+- 🎯 I'm driven by creating products that positively impact society
 - 🌍 Based in Sri Lanka, with global ambitions
 
 ---
 
 **Let's build something amazing together! 🚀**
 
-*Last updated: July 2026*
+*Last updated: August 2026*
