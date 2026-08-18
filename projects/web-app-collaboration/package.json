@@ -1,0 +1,18 @@
+{
+  "name": "web-app-collaboration",
+  "version": "0.1.0",
+  "description": "Starter files for PawanRandeepa12/web-app collaboration project",
+  "private": true,
+  "scripts": {
+    "dev": "echo 'Add your dev server command here (e.g. npx serve . or npm run start)'",
+    "start": "echo 'Placeholder. Replace with real start script.'",
+    "build": "echo 'Placeholder for build step.'"
+  },
+  "keywords": [
+    "web-app",
+    "collaboration",
+    "dev/cw"
+  ],
+  "author": "Pawan Jayarathna",
+  "license": "MIT"
+}
