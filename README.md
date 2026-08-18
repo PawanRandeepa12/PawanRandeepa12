@@ -41,8 +41,14 @@ PawanRandeepa12/
     ├── courier-management/              # MSSQL Courier System (Java + Swing)
     │   ├── pom.xml
     │   └── src/main/java/...
-    └── arduino-robotics/                 # Embedded robotics (Arduino)
-        └── README.ino
+    ├── arduino-robotics/                 # Embedded robotics (Arduino)
+    │   └── README.ino
+    └── web-app-collaboration/            # Web App Collaboration Project
+        ├── README.md
+        ├── index.html
+        ├── style.css
+        ├── app.js
+        └── package.json
 ```
 
 ---
